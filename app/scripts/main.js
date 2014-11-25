@@ -1,8 +1,14 @@
 (function(){
 
-	angular.module('FishingApp', ['ngRoute', 'firebase'])
+	angular.module('FishingApp', ['ngRoute'])
 
-	.constant('FIREBASE', 'https://fishingapp.firebaseio.com/')
+	.constant('P_HEADERS', {
+		headers: {
+			'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+			'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+			'Content-Type': 'application/json'
+		}
+	})
 
 	.config( function($routeProvider){
 
