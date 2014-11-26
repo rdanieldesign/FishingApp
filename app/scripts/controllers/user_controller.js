@@ -17,9 +17,14 @@
 			UserFactory.loginUser(user).success( function(user){
 				$('#loginForm')[0].reset();
 				console.log(user.username + ' is logged in.');
+				App.user = user;
 			}).error( function(){
 				alert('Incorrect credentials.');
 			});
+		};
+
+		$scope.checkUser = function(user){
+			UserFactory.checkUser(user);
 		};
 
 	}]);
