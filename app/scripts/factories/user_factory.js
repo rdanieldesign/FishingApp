@@ -19,12 +19,9 @@
 			return $http.get(loginURL + params, P_HEADERS)
 		};
 
-		var checkUser = function(){};
-
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
-			checkUser: checkUser
 		}
 
 	}]);

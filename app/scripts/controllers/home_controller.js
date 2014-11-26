@@ -2,10 +2,10 @@
 
 	angular.module('FishingApp')
 
-	.controller('Home', ['$scope', function($scope) {
+	.controller('Home', ['$scope', 'CreateFactory', function($scope, CreateFactory) {
 
 		$scope.getImage = function(fish) {
-			console.log(fish);
+			CreateFactory.getImage(fish);
 		};
 
 	}]);
