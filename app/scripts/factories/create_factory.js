@@ -33,6 +33,7 @@
 			})
 			.success( function(data){
 				console.log(data);
+				open(data.url)
 			})
 			.error( function(data) {
 				var obj = jQuery.parseJSON(data);
