@@ -1,10 +1,6 @@
 (function(){
 
-	Parse.initialize("gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y", "FdBpCFiTvqFGasWQJSZGVFq2hDpz3K5RAZsutX9g");
-
-	window.App = {};
-	
-	angular.module('FishingApp', ['ngRoute'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies'])
 
 	.constant('P_HEADERS', {
 		headers: {

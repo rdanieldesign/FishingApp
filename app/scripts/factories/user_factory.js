@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore',  function($http, P_HEADERS, $cookieStore){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
@@ -18,6 +18,14 @@
 		var loginUser = function(user){
 			var params = 'username='+user.username+'&password='+user.password;
 			return $http.get(loginURL + params, P_HEADERS)
+			.success( function(user){
+				$('#loginForm')[0].reset();
+				console.log(user.username + ' is logged in.');
+				$cookieStore.remove('currentUser');
+				$cookieStore.put('currentUser', user);
+			}).error( function(){
+				alert('Incorrect credentials.');
+			});
 		};
 
 		var checkUser = function(user){
@@ -30,9 +38,19 @@
 			});
 		};
 
+		var checkUser = function (user) {
+			var user = $cookieStore.get('currentUser');
+			if(user !== undefined) {
+				console.log('Welcome back ' + user.username);
+			} else {
+				console.log('No User Logged In');
+			}
+		};
+
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
+			checkUser: checkUser
 		}
 
 	}]);
