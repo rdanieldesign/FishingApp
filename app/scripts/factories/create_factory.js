@@ -2,9 +2,10 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', function($http){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
 
 		var filesURL = 'https://api.parse.com/1/files/';
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
 
 		var file;
 
@@ -14,37 +15,42 @@
 			file = files[0];
 		});
 
+		var getCatches = function(){
+			return $http.get(catchURL, P_HEADERS);
+		};
 
-		var getImage = function(fish){
+		var postCatch = function(fish){
 
 			var currentFileURL = filesURL + file.name;
-			console.log(currentFileURL);
 
 			return $http.post(currentFileURL, file, {
-					headers: {
-						'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
-						'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
-						'Content-Type': file.type
-					}
-				},
-				{
+				headers: {
+					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+					'Content-Type': file.type
+				}
+			},
+			{
 				processData: false,
 				contentType: false,
 			})
 			.success( function(data){
-				console.log(data);
-				open(data.url)
+				fish.picURL = data.url;
+				$http.post(catchURL, fish, P_HEADERS)
+				.success( function(){
+					console.log('catch added');
+				});
 			})
 			.error( function(data) {
 				var obj = jQuery.parseJSON(data);
 				alert(obj.error);
-			});
+			});;
 
-			// open(file.name, true))
 		};
 
 		return {
-			getImage: getImage
+			postCatch: postCatch,
+			getCatches: getCatches
 		}
 
 	}]);

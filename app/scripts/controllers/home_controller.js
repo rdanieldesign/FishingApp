@@ -4,8 +4,12 @@
 
 	.controller('Home', ['$scope', 'CreateFactory', function($scope, CreateFactory) {
 
-		$scope.getImage = function(fish) {
-			CreateFactory.getImage(fish);
+		CreateFactory.getCatches().success( function(data){
+			$scope.allFish = data.results;
+		});
+
+		$scope.postCatch = function(fish) {
+			CreateFactory.postCatch(fish);
 		};
 
 	}]);
