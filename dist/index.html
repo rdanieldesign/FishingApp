@@ -9,23 +9,28 @@
 
     <link rel="stylesheet" href="styles/vendor.css">
 
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+
     <link rel="stylesheet" href="styles/main.css">
 
     <script src="scripts/vendor/modernizr.js"></script>
   </head>
   <body ng-app="FishingApp">
 
-    <div class="hero-unit">
+    <div id="wrapper">
       <nav>
-        <a href="#/"><h1>FishingApp</h1></a>
-        <a href="#/login">Login</a>
+        <div class="container">
+          <a href="#/"><h1>FishingApp</h1></a>
+          <a href="#/login">Login</a>
+          <a href="#/maps">Map</a>
+        </div>
       </nav>
       <div class="container" ng-view></div>
     </div>
 
     <script src="scripts/vendor.js"></script>
 
-    <script src="//www.parsecdn.com/js/parse-1.3.2.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
 
         <script src="scripts/main.js"></script>
 </body>

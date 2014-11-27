@@ -1,10 +1,6 @@
 (function(){
 
-	Parse.initialize("gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y", "FdBpCFiTvqFGasWQJSZGVFq2hDpz3K5RAZsutX9g");
-
-	window.App = {};
-	
-	angular.module('FishingApp', ['ngRoute'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies'])
 
 	.constant('P_HEADERS', {
 		headers: {
@@ -25,6 +21,11 @@
 		$routeProvider.when('/login', {
 			templateUrl: 'templates/user.html',
 			controller: 'User'
+		});
+
+		$routeProvider.when('/maps', {
+			templateUrl: 'templates/map.html',
+			controller: 'Map'
 		});
 
 		$routeProvider.otherwise({
@@ -68,18 +69,10 @@
 		};
 
 		$scope.loginUser = function(user){
-			UserFactory.loginUser(user).success( function(user){
-				$('#loginForm')[0].reset();
-				console.log(user.username + ' is logged in.');
-				App.user = user;
-			}).error( function(){
-				alert('Incorrect credentials.');
-			});
+			UserFactory.loginUser(user);
 		};
 
-		$scope.checkUser = function(user){
-			UserFactory.checkUser(user);
-		};
+		UserFactory.checkUser();
 
 	}]);
 
@@ -88,7 +81,18 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+	.controller('Map', ['$scope', 'MapFactory', function($scope, MapFactory) {
+
+		MapFactory.startMap();
+
+	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore',  function($http, P_HEADERS, $cookieStore){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
@@ -104,6 +108,14 @@
 		var loginUser = function(user){
 			var params = 'username='+user.username+'&password='+user.password;
 			return $http.get(loginURL + params, P_HEADERS)
+			.success( function(user){
+				$('#loginForm')[0].reset();
+				console.log(user.username + ' is logged in.');
+				$cookieStore.remove('currentUser');
+				$cookieStore.put('currentUser', user);
+			}).error( function(){
+				alert('Incorrect credentials.');
+			});
 		};
 
 		var checkUser = function(user){
@@ -116,9 +128,19 @@
 			});
 		};
 
+		var checkUser = function (user) {
+			var user = $cookieStore.get('currentUser');
+			if(user !== undefined) {
+				console.log('Welcome back ' + user.username);
+			} else {
+				console.log('No User Logged In');
+			}
+		};
+
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
+			checkUser: checkUser
 		}
 
 	}]);
@@ -177,6 +199,29 @@
 		return {
 			postCatch: postCatch,
 			getCatches: getCatches
+		}
+
+	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.factory('MapFactory', ['$rootScope', '$http', 'P_HEADERS',  function($rootScope, $http, P_HEADERS){
+
+		L.mapbox.accessToken = 'pk.eyJ1IjoicmRhbmllbGRlc2lnbiIsImEiOiJtUGNzTzVrIn0.WN9X0USkwLyWvMcAto3ZiA';
+
+		var startMap = function(){
+
+			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
+			.setView([40, -74.50], 9);
+
+		}
+
+
+		return {
+			startMap: startMap
 		}
 
 	}]);
