@@ -28,16 +28,6 @@
 			});
 		};
 
-		var checkUser = function(user){
-			return $http.get(currentURL, P_HEADERS)
-			.success( function(data){
-				console.log(data);
-			})
-			.error( function(data){
-				console.log(data);
-			});
-		};
-
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
