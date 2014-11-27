@@ -23,6 +23,11 @@
 			controller: 'User'
 		});
 
+		$routeProvider.when('/maps', {
+			templateUrl: 'templates/map.html',
+			controller: 'Map'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'

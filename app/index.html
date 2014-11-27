@@ -13,6 +13,8 @@
     <!-- endbower -->
     <!-- endbuild -->
 
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
@@ -27,6 +29,7 @@
       <nav>
         <a href="#/"><h1>FishingApp</h1></a>
         <a href="#/login">Login</a>
+        <a href="#/maps">Map</a>
       </nav>
       <div class="container" ng-view></div>
     </div>
@@ -41,12 +44,16 @@
     <!-- endbower -->
     <!-- endbuild -->
 
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
+
         <!-- build:js scripts/main.js -->
         <script src="scripts/main.js"></script>
         <script src="scripts/controllers/home_controller.js"></script>
         <script src="scripts/controllers/user_controller.js"></script>
+        <script src="scripts/controllers/map_controller.js"></script>
         <script src="scripts/factories/user_factory.js"></script>
         <script src="scripts/factories/create_factory.js"></script>
+        <script src="scripts/factories/map_factory.js"></script>
         <!-- endbuild -->
 </body>
 </html>

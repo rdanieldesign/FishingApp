@@ -2,6 +2,10 @@
 @import '../../bower_components/bourbon/dist/bourbon';
 @import '../../bower_components/neat/app/assets/stylesheets/neat';
 
+// Mapbox Styles
+body { margin:0; padding:0; }
+#map { height: 400px; width:100%; }
+
 // Custom Styles
 body {
   background: #fafafa;
