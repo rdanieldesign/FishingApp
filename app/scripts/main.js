@@ -32,7 +32,7 @@
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
 		});
-
+		
 	});
 
 }());
