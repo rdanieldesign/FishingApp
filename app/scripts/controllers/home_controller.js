@@ -4,8 +4,8 @@
 
 	.controller('Home', ['$scope', 'CreateFactory', function($scope, CreateFactory) {
 
-		CreateFactory.getCatches().success( function(data){
-			$scope.allFish = data.results;
+		CreateFactory.getPublished().success( function(data){
+			$scope.publishedFish = data.results;
 		});
 
 		$scope.postCatch = function(fish) {

@@ -84,6 +84,12 @@
 			return $http.get(catchURL, P_HEADERS);
 		};
 
+		// Get all published catches
+		var getPublished = function(){
+			var params = '?where={"status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
 		var postCatch = function(fish){
 			var currentFileURL = filesURL + file.name;
 			return $http.post(currentFileURL, file, {
@@ -120,7 +126,8 @@
 
 		return {
 			postCatch: postCatch,
-			getCatches: getCatches
+			getCatches: getCatches,
+			getPublished: getPublished
 		}
 
 	}]);

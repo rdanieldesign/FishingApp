@@ -39,9 +39,16 @@
 		};
 
 		// Load the current user's posts
-		var loadUser = function(user){
+		var loadUserPublished = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = 'where={"author":"'+ user.objectId + '"}';
+			var params = 'where={"author":"'+ user.objectId + '", "status":"published"}';
+			return $http.get(catchURL + '?' + params, P_HEADERS);
+		};
+
+		// Load the current user's posts
+		var loadUserDrafts = function(user){
+			var user = $cookieStore.get('currentUser');
+			var params = 'where={"author":"'+ user.objectId + '", "status":"draft"}';
 			return $http.get(catchURL + '?' + params, P_HEADERS);
 		};
 
@@ -49,7 +56,8 @@
 			registerUser: registerUser,
 			loginUser: loginUser,
 			checkUser: checkUser,
-			loadUser: loadUser
+			loadUserPublished: loadUserPublished,
+			loadUserDrafts: loadUserDrafts
 		}
 
 	}]);
