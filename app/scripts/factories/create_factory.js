@@ -34,8 +34,10 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
+					console.log('geodata success');
 
 					postPic();
+
 				}
 				else {
 					console.log('geodata failure');
@@ -90,42 +92,7 @@
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
-		var postCatch = function(fish){
-			var currentFileURL = filesURL + file.name;
-			return $http.post(currentFileURL, file, {
-				headers: {
-					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
-					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
-					'Content-Type': file.type
-				}
-			},
-			{
-				processData: false,
-				contentType: false,
-			})
-			.success( function(data){
-				// Set Catch Image
-				fish.picURL = data.url;
-				// Set Catch geodata
-				fish.geoData = geo;
-				// Set catches' user
-				var currentUser = $cookieStore.get('currentUser');
-				fish.author = currentUser.objectId;
-				// Post Catch to Server
-				$http.post(catchURL, fish, P_HEADERS)
-				.success( function(){
-						$location.path('/maps');
-				});
-			})
-			.error( function(data) {
-				var obj = jQuery.parseJSON(data);
-				alert(obj.error);
-			});
-
-		};
-
 		return {
-			postCatch: postCatch,
 			getCatches: getCatches,
 			getPublished: getPublished
 		}

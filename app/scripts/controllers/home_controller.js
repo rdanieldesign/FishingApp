@@ -8,10 +8,6 @@
 			$scope.publishedFish = data.results;
 		});
 
-		$scope.postCatch = function(fish) {
-			CreateFactory.postCatch(fish);
-		};
-
 	}]);
 
 }());

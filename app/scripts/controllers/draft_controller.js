@@ -10,9 +10,7 @@
 		});
 
 		$scope.saveDraft = function(fish){
-			SingleFactory.saveDraft(fish).success( function(){
-				console.log('success');
-			});
+			SingleFactory.saveDraft(fish);
 		};
 
 		$scope.publish = function(fish){
