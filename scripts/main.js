@@ -28,6 +28,11 @@
 			controller: 'Map'
 		});
 
+		$routeProvider.when('/profile', {
+			templateUrl: 'templates/profile.html',
+			controller: 'Profile'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
@@ -72,6 +77,10 @@
 			UserFactory.loginUser(user);
 		};
 
+		$scope.checkUser = function(){
+			UserFactory.checkUser();
+		};
+
 		UserFactory.checkUser();
 
 	}]);
@@ -92,11 +101,25 @@
 
 	angular.module('FishingApp')
 
+	.controller('Profile', ['$scope', 'UserFactory', function($scope, UserFactory){
+
+		UserFactory.loadUser().success( function(data){
+			$scope.myFish = data.results;
+		});
+
+	}])
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
 	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore',  function($http, P_HEADERS, $cookieStore){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
 		var currentURL = 'https://api.parse.com/1/users/me/';
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
 
 		var registerUser =  function(user){
 			return $http.post(userURL, user, P_HEADERS, {
@@ -118,16 +141,6 @@
 			});
 		};
 
-		var checkUser = function(user){
-			return $http.get(currentURL, P_HEADERS)
-			.success( function(data){
-				console.log(data);
-			})
-			.error( function(data){
-				console.log(data);
-			});
-		};
-
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
@@ -137,10 +150,18 @@
 			}
 		};
 
+		// Load the current user's posts
+		var loadUser = function(user){
+			var user = $cookieStore.get('currentUser');
+			var params = 'where={"author":"'+ user.objectId + '"}';
+			return $http.get(catchURL + '?' + params, P_HEADERS);
+		};
+
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
-			checkUser: checkUser
+			checkUser: checkUser,
+			loadUser: loadUser
 		}
 
 	}]);
@@ -150,17 +171,43 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', function($http, P_HEADERS, $rootScope, $location, $cookieStore){
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var currentURL = 'https://api.parse.com/1/users/me/';
+
 
 		var file;
+		var geo;
 
+		// Get Image File and Geolocation Data
 		$('#imageFile').bind("change", function(e) {
 			var files = e.target.files || e.dataTransfer.files;
 			// Our file var now holds the selected file
 			file = files[0];
+			// Geolocation EXIF data
+			EXIF.getData(file, function() {
+				console.log(this);
+				var aLat = EXIF.getTag(this, 'GPSLatitude');
+				var aLong = EXIF.getTag(this, 'GPSLongitude');
+				if (aLat && aLong) {
+					var latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+					var longRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+					var fLat = (aLat[0].numerator + (aLat[1].numerator/aLat[1].denominator)/60 + (aLat[2].numerator/aLat[1].denominator)/3600) * (latRef === 'N' ? 1 : -1);
+					var fLong = (aLong[0].numerator + (aLong[1].numerator/ aLong[1].denominator)/60 + (aLong[2].numerator/aLong[1].denominator)/3600) * (longRef === 'W' ? -1 : 1);
+					// Set variable geo to this images geodata
+					geo = {
+						latitude: fLat,
+						longitude: fLong,
+						latitudeRef: latRef,
+						longitudeRef: longRef
+					};
+				}
+				else {
+					console.log('geodata failure');
+				}
+			});
 		});
 
 		var getCatches = function(){
@@ -168,9 +215,7 @@
 		};
 
 		var postCatch = function(fish){
-
 			var currentFileURL = filesURL + file.name;
-
 			return $http.post(currentFileURL, file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
@@ -183,16 +228,23 @@
 				contentType: false,
 			})
 			.success( function(data){
+				// Set Catch Image
 				fish.picURL = data.url;
+				// Set Catch geodata
+				fish.geoData = geo;
+				// Set catches' user
+				var currentUser = $cookieStore.get('currentUser');
+				fish.author = currentUser.objectId;
+				// Post Catch to Server
 				$http.post(catchURL, fish, P_HEADERS)
 				.success( function(){
-					console.log('catch added');
+						$location.path('/maps');
 				});
 			})
 			.error( function(data) {
 				var obj = jQuery.parseJSON(data);
 				alert(obj.error);
-			});;
+			});
 
 		};
 
@@ -208,14 +260,25 @@
 
 	angular.module('FishingApp')
 
-	.factory('MapFactory', ['$rootScope', '$http', 'P_HEADERS',  function($rootScope, $http, P_HEADERS){
+	.factory('MapFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
 
 		L.mapbox.accessToken = 'pk.eyJ1IjoicmRhbmllbGRlc2lnbiIsImEiOiJtUGNzTzVrIn0.WN9X0USkwLyWvMcAto3ZiA';
 
 		var startMap = function(){
 
 			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
-			.setView([40, -74.50], 9);
+			.setView([39.656, -97.295], 5);
+
+			// Query Catches and drop marker for each
+			$http.get(catchURL, P_HEADERS).success(function(data){
+				_.each(data.results, function(x){
+					console.log(x.geoData.latitude);
+					console.log(x.geoData.longitude);
+					L.marker([x.geoData.latitude, x.geoData.longitude]).addTo(map);
+				});
+			});
 
 		}
 
