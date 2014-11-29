@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', function($http, P_HEADERS, $rootScope){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', function($http, P_HEADERS, $rootScope, $location){
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
@@ -65,6 +65,7 @@
 				$http.post(catchURL, fish, P_HEADERS)
 				.success( function(){
 					console.log('done');
+					$location.path('/maps');
 				});
 			})
 			.error( function(data) {
