@@ -1,26 +1,156 @@
  // Bourbon & Neat
+ 
 @import '../../bower_components/bourbon/dist/bourbon';
 @import '../../bower_components/neat/app/assets/stylesheets/neat';
 
-// Custom Styles
+// Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
+
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}
+
+$column: golden-ratio(1em, 3) !default; // Column width
+$gutter: golden-ratio(1em, 3) !default; // Gutter between each two columns
+$fg-column: $column;
+$fg-gutter: $gutter;
+
+// Mapbox Styles
+
+#map { height: 400px; width:100%; }
+
+// Set Standards
+
 body {
+  margin:0;
+  padding:0;
+  font-size: 62.5%;
   background: #fafafa;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
 }
 
-.hero-unit {
-  margin: 50px auto 0 auto;
-  width: 600px;
-  font-size: 18px;
-  font-weight: 200;
-  line-height: 30px;
-  background-color: #eee;
-  border-radius: 6px;
-  padding: 60px;
-  h1 {
-    font-size: 60px;
-    line-height: 1;
-    letter-spacing: -1px;
+img {
+  width: 100%;
+}
+
+h1 {
+  font-size: 4em;
+}
+
+h3 {
+  font-size: 3em;
+}
+
+h5 {
+  font-size: 2em;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none
+}
+
+// Custom Styles
+
+#wrapper {
+  width: 100%;
+  font-size: 1.6em;
+  line-height: 1.6em;
+}
+
+nav {
+  width: 100%;
+  background-color: white;
+  margin-bottom: 60px;
+}
+
+.container {
+  @include outer-container;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// Forms
+
+input {
+  @include span-columns(12);
+  height: 50px;
+  padding-left: 20px;
+}
+
+.fakeButton {
+  position: relative;
+  overflow: auto;
+  background-color: green;
+  height: 60px;
+
+  #imageFile {
+    opacity: 0;
+    height: 60px;
+    z-index: 2;
+    position: absolute;
+  }
+
+  span {
+    color: white;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    top: 16px;
+    left: 0;
+    right: 0;
+    z-index: 1;
   }
 }
+
+button {
+  @include span-columns(12);
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+// Posts
+
+.postThumb {
+  @include span-columns(12);
+  border: 1px solid grey;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 400px){
+
+  .postThumb {
+    @include span-columns(6);
+    @include omega-reset(1n);
+    @include omega(2n);
+  }
+
+}
+
+@media (min-width: 600px){
+
+  .postThumb {
+    @include span-columns(4);
+    @include omega-reset(2n);
+    @include omega(3n);
+  }
+
+}
+
+@media (min-width: 800px){
+
+  .postThumb {
+    @include span-columns(3);
+    @include omega-reset(3n);
+    @include omega(4n);
+  }
+
+}
+
