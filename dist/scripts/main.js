@@ -33,6 +33,11 @@
 			controller: 'Profile'
 		});
 
+		$routeProvider.when('/draft/:fish', {
+			templateUrl: 'templates/draft.html',
+			controller: 'Draft'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
@@ -47,13 +52,9 @@
 
 	.controller('Home', ['$scope', 'CreateFactory', function($scope, CreateFactory) {
 
-		CreateFactory.getCatches().success( function(data){
-			$scope.allFish = data.results;
+		CreateFactory.getPublished().success( function(data){
+			$scope.publishedFish = data.results;
 		});
-
-		$scope.postCatch = function(fish) {
-			CreateFactory.postCatch(fish);
-		};
 
 	}]);
 
@@ -103,9 +104,36 @@
 
 	.controller('Profile', ['$scope', 'UserFactory', function($scope, UserFactory){
 
-		UserFactory.loadUser().success( function(data){
-			$scope.myFish = data.results;
+		UserFactory.loadUserPublished().success( function(data){
+			$scope.myPublished = data.results;
 		});
+
+		UserFactory.loadUserDrafts().success( function(data){
+			$scope.myDrafts = data.results;
+		});
+
+
+	}])
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.controller('Draft', ['$scope', 'SingleFactory', function($scope, SingleFactory){
+
+		SingleFactory.getSingle().success( function(data){
+			console.log(data);
+			$scope.fish = data.results[0];
+		});
+
+		$scope.saveDraft = function(fish){
+			SingleFactory.saveDraft(fish);
+		};
+
+		$scope.publish = function(fish){
+			SingleFactory.publish(fish);
+		};
 
 	}])
 
@@ -151,9 +179,16 @@
 		};
 
 		// Load the current user's posts
-		var loadUser = function(user){
+		var loadUserPublished = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = 'where={"author":"'+ user.objectId + '"}';
+			var params = 'where={"author":"'+ user.objectId + '", "status":"published"}';
+			return $http.get(catchURL + '?' + params, P_HEADERS);
+		};
+
+		// Load the current user's posts
+		var loadUserDrafts = function(user){
+			var user = $cookieStore.get('currentUser');
+			var params = 'where={"author":"'+ user.objectId + '", "status":"draft"}';
 			return $http.get(catchURL + '?' + params, P_HEADERS);
 		};
 
@@ -161,7 +196,8 @@
 			registerUser: registerUser,
 			loginUser: loginUser,
 			checkUser: checkUser,
-			loadUser: loadUser
+			loadUserPublished: loadUserPublished,
+			loadUserDrafts: loadUserDrafts
 		}
 
 	}]);
@@ -203,6 +239,10 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
+					console.log('geodata success');
+
+					postPic();
+
 				}
 				else {
 					console.log('geodata failure');
@@ -210,11 +250,8 @@
 			});
 		});
 
-		var getCatches = function(){
-			return $http.get(catchURL, P_HEADERS);
-		};
-
-		var postCatch = function(fish){
+		// Post picture and go to drafts
+		var postPic = function(){
 			var currentFileURL = filesURL + file.name;
 			return $http.post(currentFileURL, file, {
 				headers: {
@@ -226,31 +263,43 @@
 			{
 				processData: false,
 				contentType: false,
-			})
-			.success( function(data){
+			}).
+			success(function(data){
 				// Set Catch Image
-				fish.picURL = data.url;
+				var picURL = data.url;
 				// Set Catch geodata
-				fish.geoData = geo;
+				var geoData = geo;
 				// Set catches' user
 				var currentUser = $cookieStore.get('currentUser');
-				fish.author = currentUser.objectId;
+				var author = currentUser.objectId;
 				// Post Catch to Server
-				$http.post(catchURL, fish, P_HEADERS)
-				.success( function(){
-						$location.path('/maps');
+				$http.post(catchURL, {
+					picURL: picURL,
+					geoData: geoData,
+					author: author,
+					status: 'draft'
+				}, P_HEADERS)
+				.success( function(data){
+					var draftId = data.objectId;
+					$location.path('/draft/' + draftId);
 				});
-			})
-			.error( function(data) {
-				var obj = jQuery.parseJSON(data);
-				alert(obj.error);
 			});
+		};
 
+		// Get all catches
+		var getCatches = function(){
+			return $http.get(catchURL, P_HEADERS);
+		};
+
+		// Get all published catches
+		var getPublished = function(){
+			var params = '?where={"status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		return {
-			postCatch: postCatch,
-			getCatches: getCatches
+			getCatches: getCatches,
+			getPublished: getPublished
 		}
 
 	}]);
@@ -288,5 +337,43 @@
 		}
 
 	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.factory('SingleFactory', [ '$http', '$routeParams', 'P_HEADERS', '$location', function($http, $routeParams, P_HEADERS, $location){
+
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var singleId = $routeParams.fish;
+
+		var getSingle = function(){
+			var params = '?where={"objectId":"'+ singleId + '"}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
+		var saveDraft = function(fish){
+			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			.success( function(){
+				$location.path('/profile');
+			});
+		};
+
+		var publish = function(fish){
+			fish.status = "published";
+			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			.success( function(){
+				$location.path('/maps');
+			});
+		};
+
+		return {
+			getSingle: getSingle,
+			saveDraft: saveDraft,
+			publish: publish
+		}
+
+	}])
 
 }());
