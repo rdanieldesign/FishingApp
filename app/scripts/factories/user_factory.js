@@ -7,6 +7,7 @@
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
 		var currentURL = 'https://api.parse.com/1/users/me/';
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
 
 		var registerUser =  function(user){
 			return $http.post(userURL, user, P_HEADERS, {
@@ -37,10 +38,18 @@
 			}
 		};
 
+		// Load the current user's posts
+		var loadUser = function(user){
+			var user = $cookieStore.get('currentUser');
+			var params = 'where={"author":"'+ user.objectId + '"}';
+			return $http.get(catchURL + '?' + params, P_HEADERS);
+		};
+
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
-			checkUser: checkUser
+			checkUser: checkUser,
+			loadUser: loadUser
 		}
 
 	}]);

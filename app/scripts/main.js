@@ -28,11 +28,16 @@
 			controller: 'Map'
 		});
 
+		$routeProvider.when('/profile', {
+			templateUrl: 'templates/profile.html',
+			controller: 'Profile'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
 		});
-		
+
 	});
 
 }());

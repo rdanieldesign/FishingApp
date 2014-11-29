@@ -2,10 +2,12 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', function($http, P_HEADERS, $rootScope, $location){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', function($http, P_HEADERS, $rootScope, $location, $cookieStore){
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var currentURL = 'https://api.parse.com/1/users/me/';
+
 
 		var file;
 		var geo;
@@ -61,11 +63,13 @@
 				fish.picURL = data.url;
 				// Set Catch geodata
 				fish.geoData = geo;
+				// Set catches' user
+				var currentUser = $cookieStore.get('currentUser');
+				fish.author = currentUser.objectId;
 				// Post Catch to Server
 				$http.post(catchURL, fish, P_HEADERS)
 				.success( function(){
-					console.log('done');
-					$location.path('/maps');
+						$location.path('/maps');
 				});
 			})
 			.error( function(data) {
