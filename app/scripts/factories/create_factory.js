@@ -34,6 +34,10 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
+					console.log('geodata success');
+
+					postPic();
+
 				}
 				else {
 					console.log('geodata failure');
@@ -41,11 +45,8 @@
 			});
 		});
 
-		var getCatches = function(){
-			return $http.get(catchURL, P_HEADERS);
-		};
-
-		var postCatch = function(fish){
+		// Post picture and go to drafts
+		var postPic = function(){
 			var currentFileURL = filesURL + file.name;
 			return $http.post(currentFileURL, file, {
 				headers: {
@@ -57,31 +58,43 @@
 			{
 				processData: false,
 				contentType: false,
-			})
-			.success( function(data){
+			}).
+			success(function(data){
 				// Set Catch Image
-				fish.picURL = data.url;
+				var picURL = data.url;
 				// Set Catch geodata
-				fish.geoData = geo;
+				var geoData = geo;
 				// Set catches' user
 				var currentUser = $cookieStore.get('currentUser');
-				fish.author = currentUser.objectId;
+				var author = currentUser.objectId;
 				// Post Catch to Server
-				$http.post(catchURL, fish, P_HEADERS)
-				.success( function(){
-						$location.path('/maps');
+				$http.post(catchURL, {
+					picURL: picURL,
+					geoData: geoData,
+					author: author,
+					status: 'draft'
+				}, P_HEADERS)
+				.success( function(data){
+					var draftId = data.objectId;
+					$location.path('/draft/' + draftId);
 				});
-			})
-			.error( function(data) {
-				var obj = jQuery.parseJSON(data);
-				alert(obj.error);
 			});
+		};
 
+		// Get all catches
+		var getCatches = function(){
+			return $http.get(catchURL, P_HEADERS);
+		};
+
+		// Get all published catches
+		var getPublished = function(){
+			var params = '?where={"status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		return {
-			postCatch: postCatch,
-			getCatches: getCatches
+			getCatches: getCatches,
+			getPublished: getPublished
 		}
 
 	}]);
