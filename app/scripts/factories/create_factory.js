@@ -34,6 +34,8 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
+
+					postPic();
 				}
 				else {
 					console.log('geodata failure');
@@ -41,6 +43,43 @@
 			});
 		});
 
+		// Post picture and go to drafts
+		var postPic = function(){
+			var currentFileURL = filesURL + file.name;
+			return $http.post(currentFileURL, file, {
+				headers: {
+					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+					'Content-Type': file.type
+				}
+			},
+			{
+				processData: false,
+				contentType: false,
+			}).
+			success(function(data){
+				// Set Catch Image
+				var picURL = data.url;
+				// Set Catch geodata
+				var geoData = geo;
+				// Set catches' user
+				var currentUser = $cookieStore.get('currentUser');
+				var author = currentUser.objectId;
+				// Post Catch to Server
+				$http.post(catchURL, {
+					picURL: picURL,
+					geoData: geoData,
+					author: author,
+					status: 'draft'
+				}, P_HEADERS)
+				.success( function(data){
+					var draftId = data.objectId;
+					$location.path('/draft/' + draftId);
+				});
+			});
+		};
+
+		// Get all catches
 		var getCatches = function(){
 			return $http.get(catchURL, P_HEADERS);
 		};

@@ -32,6 +32,10 @@
           <a href="#/login">Login</a>
           <a href="#/maps">Map</a>
           <a href="#/profile">My Profile</a>
+          <div class="fakeButton">
+            <span>Get Image</span>
+            <input id="imageFile" type="file" accept="image/*" capture="camera" ng-model="fish.image">
+          </div>
         </div>
       </nav>
       <div class="container" ng-view></div>
@@ -56,9 +60,11 @@
         <script src="scripts/controllers/user_controller.js"></script>
         <script src="scripts/controllers/map_controller.js"></script>
         <script src="scripts/controllers/profile_controller.js"></script>
+        <script src="scripts/controllers/draft_controller.js"></script>
         <script src="scripts/factories/user_factory.js"></script>
         <script src="scripts/factories/create_factory.js"></script>
         <script src="scripts/factories/map_factory.js"></script>
+        <script src="scripts/factories/single_factory.js"></script>
         <!-- endbuild -->
 </body>
 </html>

@@ -33,6 +33,11 @@
 			controller: 'Profile'
 		});
 
+		$routeProvider.when('/draft/:fish', {
+			templateUrl: 'templates/draft.html',
+			controller: 'Draft'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
