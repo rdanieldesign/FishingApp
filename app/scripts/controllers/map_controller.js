@@ -5,7 +5,6 @@
 	.controller('Map', ['$scope', 'MapFactory', function($scope, MapFactory) {
 
 		MapFactory.startMap();
-		MapFactory.getRivers();
 
 	}]);
 
