@@ -66,12 +66,15 @@
 				var geoData = geo;
 				// Set catches' user
 				var currentUser = $cookieStore.get('currentUser');
-				var author = currentUser.objectId;
 				// Post Catch to Server
 				$http.post(catchURL, {
-					picURL: picURL,
-					geoData: geoData,
-					author: author,
+					"picURL": picURL,
+					"geoData": geoData,
+					"user": {
+						"__type": "Pointer",
+						"className": "_User",
+						"objectId": currentUser.objectId
+					},
 					status: 'draft'
 				}, P_HEADERS)
 				.success( function(data){
