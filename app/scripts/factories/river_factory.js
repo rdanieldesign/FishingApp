@@ -9,7 +9,8 @@
 
 		var getRiverData = function(){
 			console.log(riverID);
-			return $http.get(riverURL + riverID, P_HEADERS);
+			var params = '?where={"$relatedTo":{"object":[{"__type":"Pointer","className":"catches"},"key":"catches"}}';
+			return $http.get(riverURL + riverID + params, P_HEADERS);
 		};
 
 		return {
