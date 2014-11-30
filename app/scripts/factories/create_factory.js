@@ -17,7 +17,35 @@
 			var files = e.target.files || e.dataTransfer.files;
 			// Our file var now holds the selected file
 			file = files[0];
-			// Geolocation EXIF data
+
+			// HTML5 Geolocation
+			getGeo();
+
+
+
+		});
+
+		// HTML5 Geolocation
+		var getGeo = function get_location() {
+			if (Modernizr.geolocation) {
+				var show_map = function(position) {
+					var latitude = position.coords.latitude;
+					var longitude = position.coords.longitude;
+					geo = {
+						"latitude": latitude,
+						"longitude": longitude,
+					};
+					postPic();
+				};
+				navigator.geolocation.getCurrentPosition(show_map);
+			} else {
+				console.log('HTML5 Geolocation failure');
+				exifGeo();
+			}
+		};
+
+		// Exif Data Backup Geolocation
+		var exifGeo = function(){
 			EXIF.getData(file, function() {
 				console.log(this);
 				var aLat = EXIF.getTag(this, 'GPSLatitude');
@@ -34,16 +62,15 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
-					console.log('geodata success');
-
+					console.log('EXIF geodata success');
+					// Start Drafting Post
 					postPic();
-
 				}
 				else {
 					console.log('geodata failure');
 				}
 			});
-		});
+		};
 
 		// Post picture and go to drafts
 		var postPic = function(){
@@ -66,12 +93,20 @@
 				var geoData = geo;
 				// Set catches' user
 				var currentUser = $cookieStore.get('currentUser');
-				var author = currentUser.objectId;
 				// Post Catch to Server
 				$http.post(catchURL, {
-					picURL: picURL,
-					geoData: geoData,
-					author: author,
+					"picURL": picURL,
+					"geoData": geoData,
+					"user": {
+						"__type": "Pointer",
+						"className": "_User",
+						"objectId": currentUser.objectId
+					},
+					"river": {
+						"__type": "Pointer",
+						"className": "rivers",
+						"objectId": "nYPd56jbab"
+					},
 					status: 'draft'
 				}, P_HEADERS)
 				.success( function(data){

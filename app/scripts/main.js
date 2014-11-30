@@ -33,6 +33,11 @@
 			controller: 'Profile'
 		});
 
+		$routeProvider.when('/river/:id', {
+			templateUrl: 'templates/river.html',
+			controller: 'River'
+		});
+
 		$routeProvider.when('/draft/:fish', {
 			templateUrl: 'templates/draft.html',
 			controller: 'Draft'
