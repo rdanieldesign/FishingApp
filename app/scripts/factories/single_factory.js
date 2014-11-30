@@ -5,6 +5,7 @@
 	.factory('SingleFactory', [ '$http', '$routeParams', 'P_HEADERS', '$location', function($http, $routeParams, P_HEADERS, $location){
 
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var riverURL = 'https://api.parse.com/1/classes/rivers/';
 		var singleId = $routeParams.fish;
 
 		var getSingle = function(){
@@ -23,7 +24,18 @@
 			fish.status = "published";
 			return $http.put(catchURL + singleId, fish, P_HEADERS)
 			.success( function(){
-				$location.path('/maps');
+				$http.put(riverURL + fish.river.objectId, {
+					"catches": {
+						"__op":"AddRelation",
+						"objects": [{
+							"__type": "Pointer",
+							"className": "catches",
+							"objectId": fish.objectId
+						}]
+					}
+				}, P_HEADERS).success(function(){
+					$location.path('/maps');
+				});
 			});
 		};
 
