@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<GroundOverlay>
+	<name>Dawson County PTS</name>
+	<description>Base map created by Georgia Department of Natural Resources. Marked up by WildTroutStreams.com to identify &quot;Primary&quot; trout streams, which support natural trout reproduction, as classified in 391-3-6-.03 GA Water Use Classifications and Water Quality Standards</description>
+	<color>c4ffffff</color>
+	<Icon>
+		<href>Dawson_primary.gif</href>
+		<viewBoundScale>0.75</viewBoundScale>
+	</Icon>
+	<LatLonBox>
+		<north>34.65967902998778</north>
+		<south>34.31259243792854</south>
+		<east>-83.88897093699393</east>
+		<west>-84.41608546797445</west>
+		<rotation>-1.130086067638404</rotation>
+	</LatLonBox>
+</GroundOverlay>
+</kml>

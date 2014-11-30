@@ -22,11 +22,17 @@
 				});
 			});
 
+		};
+
+		// Get Rivers from rivers.js and populate map
+		var getRivers = function(){
+			console.log(rivers[0]);
 		}
 
 
 		return {
-			startMap: startMap
+			startMap: startMap,
+			getRivers: getRivers
 		}
 
 	}]);
