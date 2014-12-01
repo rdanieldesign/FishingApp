@@ -39,7 +39,7 @@
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
 			} else {
-				console.log('HTML5 Geolocation failure');
+				alert('HTML5 Geolocation failure');
 				exifGeo();
 			}
 		};
@@ -62,12 +62,12 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
-					console.log('EXIF geodata success');
+					alert('EXIF geodata success');
 					// Start Drafting Post
 					postPic();
 				}
 				else {
-					console.log('geodata failure');
+					alert('geodata failure');
 				}
 			});
 		};
@@ -111,6 +111,7 @@
 				}, P_HEADERS)
 				.success( function(data){
 					var draftId = data.objectId;
+					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);
 				});
 			});
