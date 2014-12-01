@@ -192,9 +192,9 @@
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
-				console.log('Welcome back ' + user.username);
+				alert('Welcome back ' + user.username);
 			} else {
-				console.log('No User Logged In');
+				alert('No User Logged In');
 			}
 		};
 
@@ -264,7 +264,7 @@
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
 			} else {
-				console.log('HTML5 Geolocation failure');
+				alert('HTML5 Geolocation failure');
 				exifGeo();
 			}
 		};
@@ -287,12 +287,12 @@
 						latitudeRef: latRef,
 						longitudeRef: longRef
 					};
-					console.log('EXIF geodata success');
+					alert('EXIF geodata success');
 					// Start Drafting Post
 					postPic();
 				}
 				else {
-					console.log('geodata failure');
+					alert('geodata failure');
 				}
 			});
 		};
@@ -336,6 +336,7 @@
 				}, P_HEADERS)
 				.success( function(data){
 					var draftId = data.objectId;
+					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);
 				});
 			});
