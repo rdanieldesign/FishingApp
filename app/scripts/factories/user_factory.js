@@ -29,6 +29,11 @@
 			});
 		};
 
+		logout = function () {
+			$cookieStore.remove('currentUser');
+			return checkUser();
+		};
+
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
@@ -55,6 +60,7 @@
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
+			logout: logout,
 			checkUser: checkUser,
 			loadUserPublished: loadUserPublished,
 			loadUserDrafts: loadUserDrafts

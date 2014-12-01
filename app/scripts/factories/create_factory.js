@@ -8,21 +8,16 @@
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
 		var currentURL = 'https://api.parse.com/1/users/me/';
 
-
 		var file;
 		var geo;
 
-		// Get Image File and Geolocation Data
-		$('#imageFile').bind("change", function(e) {
+		// Get Image File and Geolocation Data on input field change
+		$('#imageFile').bind('change', function(e) {
 			var files = e.target.files || e.dataTransfer.files;
 			// Our file var now holds the selected file
 			file = files[0];
-
 			// HTML5 Geolocation
 			getGeo();
-
-
-
 		});
 
 		// HTML5 Geolocation

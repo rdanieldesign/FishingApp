@@ -17,6 +17,10 @@
 			UserFactory.loginUser(user);
 		};
 
+		$scope.logout = function(){
+			UserFactory.logout();
+		};
+
 		$scope.checkUser = function(){
 			UserFactory.checkUser();
 		};
