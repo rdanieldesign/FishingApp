@@ -32,9 +32,9 @@
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
-				console.log('Welcome back ' + user.username);
+				alert('Welcome back ' + user.username);
 			} else {
-				console.log('No User Logged In');
+				alert('No User Logged In');
 			}
 		};
 
