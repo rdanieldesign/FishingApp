@@ -1,9 +1,11 @@
-<form id="loginForm">
-	<input type="text" placeholder="Username" ng-model="user.username">
-	<input type="password" placeholder="Password" ng-model="user.password">
-	<button ng-click="registerUser(user)">Register</button>
-	<button ng-click="loginUser(user)">Login</button>
-	<button ng-click="logout()">Logout</button>
-</form>
+<div class="container">
+	<form id="loginForm">
+		<input type="text" placeholder="Username" ng-model="user.username">
+		<input type="password" placeholder="Password" ng-model="user.password">
+		<button ng-click="registerUser(user)">Register</button>
+		<button ng-click="loginUser(user)">Login</button>
+		<button ng-click="logout()">Logout</button>
+	</form>
 
-<button ng-click="checkUser()">Check User</button>
+	<button ng-click="checkUser()">Check User</button>
+</div>
