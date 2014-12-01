@@ -49,8 +49,11 @@ h5 {
 }
 
 ul, li {
-  margin: 0;
-  padding: 0;
+  webkit-margin-before: 0;
+  -webkit-margin-after: 0;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-start: 0;
   list-style: none;
 }
 
@@ -86,7 +89,7 @@ nav {
   top: 0;
   background-color: $dgrey;
   margin-bottom: 60px;
-  z-index: 99;
+  z-index: 9999;
 
   .container {
     background-color: $dgrey;
@@ -150,7 +153,7 @@ button {
 
 .grid {
   margin: 40px 0;
-  overflow: auto;
+  @include span-columns(12);
 }
 
 .postThumb {
@@ -182,6 +185,30 @@ button {
     margin-top: 220px;
     margin-left: 20px;
   }
+}
+
+// River Profile
+
+.riverMap {
+  @include span-columns(4);
+  height: 300px;
+  position: relative;
+}
+
+.riverTitle {
+  @include span-columns(4);
+  height: 300px;
+}
+
+.riverConditions {
+  @include span-columns(4);
+  @include omega();
+  height: 300px;
+}
+
+.riverfilters {
+  @include span-columns(12);
+  background-color: $yellow;
 }
 
 

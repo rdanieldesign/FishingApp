@@ -1,4 +1,31 @@
 <div class="container">
-	<h3>{{ riverProps.title }}</h3>
-	<p>{{ riverProps.description }}</p>
+	<div class="riverTitle">
+		<h3>{{ riverProps.title }}</h3>
+		<p>{{ riverProps.description }}</p>
+	</div>
+	<div class="riverMap">
+		<div id='map'></div>
+	</div>
+	<div class="riverConditions">
+		<h5>Current Conditions</h5>
+		<p>{{ riverProps.description }}</p>
+	</div>
+	<div class="riverfilters">
+		<h5>Filter Recent Catches</h5>
+		<div class="tempFilter">
+			<h5>Temperature</h5>
+			<div id="tempSlider"></div>
+			<p>Min. Temp: <span id="tempSlider_high"></span></p>
+			<p>Max Temp: <span id="tempSlider_low"></span></p>
+		</div>
+	</div>
+	<ul class="grid">
+		<li class="postThumb" ng-repeat="fish in riverCatches">
+			<img src="{{ fish.picURL }}" alt="">
+			<div class="info">
+				<p>Species: {{ fish.species }}</p>
+				<p>Fly Used: {{ fish.fly }}</p>
+			</div>
+		</li>
+	</ul>
 </div>

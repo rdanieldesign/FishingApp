@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('MapFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+	.factory('MapFactory', ['$http', 'P_HEADERS', '$routeParams', function($http, P_HEADERS, $routeParams){
 
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -37,9 +37,22 @@
 
 		};
 
+		var startRiverMap = function(){
+			var params = $routeParams.id;
+			$http.get(riverURL + params, P_HEADERS).success(function(data){
+				var coordinates = data.features[0].geometry.coordinates;
+				var options = data.features[0].properties;
+				var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446');
+				var polyline = L.polyline(coordinates, options).addTo(map);
+				// zoom the map to the polyline
+				map.fitBounds(polyline.getBounds());
+			});
+		};
+
 
 		return {
-			startMap: startMap
+			startMap: startMap,
+			startRiverMap: startRiverMap
 		}
 
 	}]);
