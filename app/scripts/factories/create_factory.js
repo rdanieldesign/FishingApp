@@ -2,14 +2,17 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', function($http, P_HEADERS, $rootScope, $location, $cookieStore){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', 'WEATHER', function($http, P_HEADERS, $rootScope, $location, $cookieStore, WEATHER){
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
+		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263'
 		var currentURL = 'https://api.parse.com/1/users/me/';
 
 		var file;
 		var geo;
+		var weather;
 
 		// Get Image File and Geolocation Data on input field change
 		$('#imageFile').bind('change', function(e) {
@@ -30,6 +33,7 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
+					getWeather();
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
@@ -67,9 +71,19 @@
 			});
 		};
 
+		var getWeather = function(){
+			var coords = '?lat='+ geo.latitude +'&lon='+ geo.longitude;
+			$http.get(weatherURL + coords + weatherKey).success( function(data){
+				weather = data;
+				console.log(weather);
+			});
+		};
+
 		// Post picture and go to drafts
 		var postPic = function(){
 			var currentFileURL = filesURL + file.name;
+			// Set catches' user
+			var currentUser = $cookieStore.get('currentUser');
 			return $http.post(currentFileURL, file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
@@ -86,12 +100,11 @@
 				var picURL = data.url;
 				// Set Catch geodata
 				var geoData = geo;
-				// Set catches' user
-				var currentUser = $cookieStore.get('currentUser');
 				// Post Catch to Server
 				$http.post(catchURL, {
 					"picURL": picURL,
 					"geoData": geoData,
+					"weather": weather,
 					"user": {
 						"__type": "Pointer",
 						"className": "_User",
