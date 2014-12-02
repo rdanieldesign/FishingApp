@@ -6,6 +6,14 @@
 
 		MapFactory.startMap();
 
+		RiverFactory.getAllRivers().success(function(data){
+			$scope.rivers = data.results;
+		});
+
+		// $scope.search.on('change', function(){
+		// 	$scope.$apply();
+		// });
+
 	}]);
 
 }());
