@@ -42,6 +42,8 @@
 
 		MapFactory.startRiverMap();
 
+		// RiverFactory.createRiver();
+
 	}]);
 
 }());

@@ -114,7 +114,7 @@
 					// 	"className": "rivers",
 					// 	"objectId": "nYPd56jbab"
 					// },
-					status: 'draft'
+					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
 					var draftId = data.objectId;

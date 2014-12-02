@@ -68,12 +68,17 @@
 			return $http.get(riverURL, P_HEADERS);
 		};
 
+		var createRiver = function(river){
+			return $http.post(riverURL, river, P_HEADERS);
+		};
+
 		return {
 			getRiverData: getRiverData,
 			getRiverCatches: getRiverCatches,
 			getRiverWeather: getRiverWeather,
 			getClosestRiver: getClosestRiver,
-			getAllRivers: getAllRivers
+			getAllRivers: getAllRivers,
+			createRiver: createRiver
 		};
 
 	}]);
