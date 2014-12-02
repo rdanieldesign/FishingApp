@@ -11,6 +11,12 @@
 		}
 	})
 
+	.constant('WEATHER', {
+		headers: {
+			'x-api-key': 'APPID=480997352b669d76eb0919fd6cf75263'
+		}
+	})
+
 	.config( function($routeProvider){
 
 		$routeProvider.when('/', {
@@ -83,6 +89,10 @@
 			UserFactory.loginUser(user);
 		};
 
+		$scope.logout = function(){
+			UserFactory.logout();
+		};
+
 		$scope.checkUser = function(){
 			UserFactory.checkUser();
 		};
@@ -147,13 +157,45 @@
 
 	angular.module('FishingApp')
 
-	.controller('River', ['$scope', 'RiverFactory', function($scope, RiverFactory) {
+	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', function($scope, RiverFactory, MapFactory) {
 
-		RiverFactory.getRiverData().success( function(data){
-			console.log(data);
+		RiverFactory.getRiverData().success(function(data){
+			RiverFactory.getRiverWeather(data).success(function(weather){
+				var currentTemp = weather.main.temp;
+				$scope.currentTemp = currentTemp;
+			});
+			RiverFactory.getRiverCatches().success( function(data){
+				$scope.riverCatches = data.results;
+			});
 			$scope.river = data;
 			$scope.riverProps = data.features[0].properties;
+			// Initiate slider
+			$('#tempSlider').noUiSlider({
+				start: [20, 80],
+				connect: true,
+				margin: 10,
+				range: {
+					'min': 0,
+					'max': 100
+				}
+			});
+			$('#tempSlider').Link('upper').to($('#tempSlider_high'));
+			$('#tempSlider').Link('lower').to($('#tempSlider_low'));
+			$scope.low = 20;
+			$scope.high = 80;
 		});
+
+		$('#tempSlider').on('slide', function(){
+			$scope.low = $('#tempSlider').val()[0];
+			$scope.high = $('#tempSlider').val()[1];
+			$scope.$apply();
+		});
+
+		$scope.tempFilter = function (fish) {
+			return fish.weather.main.temp >= $scope.low && fish.weather.main.temp <= $scope.high;
+		};
+
+		MapFactory.startRiverMap();
 
 	}]);
 
@@ -189,6 +231,11 @@
 			});
 		};
 
+		logout = function () {
+			$cookieStore.remove('currentUser');
+			return checkUser();
+		};
+
 		var checkUser = function (user) {
 			var user = $cookieStore.get('currentUser');
 			if(user !== undefined) {
@@ -215,6 +262,7 @@
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
+			logout: logout,
 			checkUser: checkUser,
 			loadUserPublished: loadUserPublished,
 			loadUserDrafts: loadUserDrafts
@@ -227,27 +275,25 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', function($http, P_HEADERS, $rootScope, $location, $cookieStore){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', 'WEATHER', function($http, P_HEADERS, $rootScope, $location, $cookieStore, WEATHER){
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
+		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 		var currentURL = 'https://api.parse.com/1/users/me/';
-
 
 		var file;
 		var geo;
+		var weather;
 
-		// Get Image File and Geolocation Data
-		$('#imageFile').bind("change", function(e) {
+		// Get Image File and Geolocation Data on input field change
+		$('#imageFile').bind('change', function(e) {
 			var files = e.target.files || e.dataTransfer.files;
 			// Our file var now holds the selected file
 			file = files[0];
-
 			// HTML5 Geolocation
 			getGeo();
-
-
-
 		});
 
 		// HTML5 Geolocation
@@ -260,6 +306,7 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
+					getWeather();
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
@@ -297,9 +344,18 @@
 			});
 		};
 
+		var getWeather = function(){
+			var coords = '?lat='+ geo.latitude +'&lon='+ geo.longitude;
+			$http.get(weatherURL + coords + weatherKey).success( function(data){
+				weather = data;
+			});
+		};
+
 		// Post picture and go to drafts
 		var postPic = function(){
 			var currentFileURL = filesURL + file.name;
+			// Set catches' user
+			var currentUser = $cookieStore.get('currentUser');
 			return $http.post(currentFileURL, file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
@@ -316,12 +372,11 @@
 				var picURL = data.url;
 				// Set Catch geodata
 				var geoData = geo;
-				// Set catches' user
-				var currentUser = $cookieStore.get('currentUser');
 				// Post Catch to Server
 				$http.post(catchURL, {
 					"picURL": picURL,
 					"geoData": geoData,
+					"weather": weather,
 					"user": {
 						"__type": "Pointer",
 						"className": "_User",
@@ -365,7 +420,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('MapFactory', ['$http', 'P_HEADERS', function($http, P_HEADERS){
+	.factory('MapFactory', ['$http', 'P_HEADERS', '$routeParams', function($http, P_HEADERS, $routeParams){
 
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -400,9 +455,22 @@
 
 		};
 
+		var startRiverMap = function(){
+			var params = $routeParams.id;
+			$http.get(riverURL + params, P_HEADERS).success(function(data){
+				var coordinates = data.features[0].geometry.coordinates;
+				var options = data.features[0].properties;
+				var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446');
+				var polyline = L.polyline(coordinates, options).addTo(map);
+				// zoom the map to the polyline
+				map.fitBounds(polyline.getBounds());
+			});
+		};
+
 
 		return {
-			startMap: startMap
+			startMap: startMap,
+			startRiverMap: startRiverMap
 		}
 
 	}]);
@@ -466,15 +534,30 @@
 
 		var riverID = $routeParams.id;
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
+		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
+		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 
 		var getRiverData = function(){
-			console.log(riverID);
-			var params = '?where={"$relatedTo":{"object":[{"__type":"Pointer","className":"catches"},"key":"catches"}}';
-			return $http.get(riverURL + riverID + params, P_HEADERS);
+			return $http.get(riverURL + riverID, P_HEADERS);
+		};
+
+		var getRiverCatches = function(){
+			var params = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ riverID +'"},"key":"catches"}}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
+		var getRiverWeather = function(river){
+			var coordsArray = river.features[0].geometry.coordinates;
+			var coords = coordsArray[Math.round(coordsArray.length/2)];
+			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
+			return $http.get(weatherURL + params + weatherKey);
 		};
 
 		return {
-			getRiverData: getRiverData
+			getRiverData: getRiverData,
+			getRiverCatches: getRiverCatches,
+			getRiverWeather: getRiverWeather
 		};
 
 	}]);
