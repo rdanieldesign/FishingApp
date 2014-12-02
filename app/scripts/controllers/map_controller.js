@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.controller('Map', ['$scope', 'MapFactory', function($scope, MapFactory) {
+	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', function($scope, MapFactory, RiverFactory) {
 
 		MapFactory.startMap();
 

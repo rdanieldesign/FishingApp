@@ -14,7 +14,7 @@
 
 			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
 			.setView([39.656, -97.295], 5);
-
+			
 			// Query Catches and drop marker for each
 			$http.get(catchURL, P_HEADERS).success(function(data){
 				_.each(data.results, function(x){
