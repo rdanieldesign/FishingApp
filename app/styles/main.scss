@@ -90,7 +90,7 @@ button {
   color: $white;
   border: none;
   height: 60px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 // Custom Styles
@@ -181,6 +181,29 @@ nav {
       right: 0;
       z-index: 1;
     }
+  }
+}
+
+// Login
+
+#loginForm {
+
+  input {
+    margin-bottom: 8px;
+  }
+
+  #loginButton {
+    background-color: $green;
+    margin-bottom: 8px;
+  }
+
+  #registerButton {
+    margin-bottom: 50px;
+  }
+
+  #logoutButton {
+    background-color: $red;
+    margin-bottom: 50px;
   }
 }
 

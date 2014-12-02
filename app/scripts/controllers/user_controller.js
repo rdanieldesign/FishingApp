@@ -5,12 +5,7 @@
 	.controller('User', ['$scope', 'UserFactory', function($scope, UserFactory){
 
 		$scope.registerUser = function(user){
-			UserFactory.registerUser(user).success( function(){
-				$scope.loginUser(user);
-				$('#loginForm')[0].reset();
-			}).error( function(){
-				alert('Please provide a username and password.');
-			});
+			UserFactory.registerUser(user);
 		};
 
 		$scope.loginUser = function(user){
@@ -25,7 +20,9 @@
 			UserFactory.checkUser();
 		};
 
-		UserFactory.checkUser();
+		UserFactory.watchFileInput();
+
+		// UserFactory.checkUser();
 
 	}]);
 

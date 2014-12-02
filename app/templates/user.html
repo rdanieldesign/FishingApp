@@ -1,10 +1,13 @@
 <div class="container">
+	<img src="{{user.avatar}}" alt="">
+	<p>Logged in as {{user.name}}</p>
 	<form id="loginForm">
 		<input type="text" placeholder="Username" ng-model="user.username">
 		<input type="password" placeholder="Password" ng-model="user.password">
-		<button ng-click="registerUser(user)">Register</button>
-		<button ng-click="loginUser(user)">Login</button>
-		<button ng-click="logout()">Logout</button>
+		<input id="avatarUpload" type="file">
+		<button id="loginButton" ng-click="loginUser(user)">Login</button>
+		<button id="registerButton" ng-click="registerUser(user)">Register</button>
+		<button id="logoutButton" ng-click="logout()">Logout</button>
 	</form>
 
 	<button ng-click="checkUser()">Check User</button>
