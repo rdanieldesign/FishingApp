@@ -1,6 +1,6 @@
 <div class="container">
 	<div class="riverTitle">
-		<h3>{{ riverProps.title }}</h3>
+		<h5>{{ riverProps.title }}</h5>
 		<p>{{ riverProps.description }}</p>
 	</div>
 	<div class="riverMap">
@@ -8,23 +8,24 @@
 	</div>
 	<div class="riverConditions">
 		<h5>Current Conditions</h5>
-		<p>{{ riverProps.description }}</p>
+		<p>Temperature: {{ currentTemp }}&deg;F</p>
 	</div>
 	<div class="riverfilters">
 		<h5>Filter Recent Catches</h5>
 		<div class="tempFilter">
 			<h5>Temperature</h5>
 			<div id="tempSlider"></div>
-			<p>Min. Temp: <span id="tempSlider_high"></span></p>
-			<p>Max Temp: <span id="tempSlider_low"></span></p>
+			<p>Min. Temp: <span id="tempSlider_low"></span></p>
+			<p>Max Temp: <span id="tempSlider_high"></span></p>
 		</div>
 	</div>
 	<ul class="grid">
-		<li class="postThumb" ng-repeat="fish in riverCatches">
+		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter">
 			<img src="{{ fish.picURL }}" alt="">
 			<div class="info">
 				<p>Species: {{ fish.species }}</p>
 				<p>Fly Used: {{ fish.fly }}</p>
+				<p>Temp: {{ fish.weather.main.temp }}</p>
 			</div>
 		</li>
 	</ul>

@@ -7,7 +7,7 @@
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
 		var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
-		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263'
+		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 		var currentURL = 'https://api.parse.com/1/users/me/';
 
 		var file;
@@ -75,7 +75,6 @@
 			var coords = '?lat='+ geo.latitude +'&lon='+ geo.longitude;
 			$http.get(weatherURL + coords + weatherKey).success( function(data){
 				weather = data;
-				console.log(weather);
 			});
 		};
 
