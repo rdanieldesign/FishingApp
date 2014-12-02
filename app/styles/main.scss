@@ -5,6 +5,17 @@
 // Partials
 @import 'colors';
 
+// Variables
+$cRadius: 1px;
+
+// Mixins
+@mixin border-radius {
+  -webkit-border-radius: $cRadius;
+  -moz-border-radius: $cRadius;
+  -ms-border-radius: $cRadius;
+  border-radius: $cRadius;
+}
+
 // Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
 
 @mixin omega-reset($nth) {
@@ -62,16 +73,24 @@ a {
   color: $white;
 }
 
-button {
-  background-color: $yellow;
-  color: $white;
+// Forms
+
+input {
+  @include span-columns(12);
+  height: 50px;
+  padding-left: 20px;
   border: none;
   border-radius: none;
 }
 
-input {
+button {
+  @include span-columns(12);
+  @include border-radius;
+  background-color: $yellow;
+  color: $white;
   border: none;
-  border-radius: none;
+  height: 60px;
+  margin-bottom: 20px;
 }
 
 // Custom Styles
@@ -81,19 +100,6 @@ input {
   font-size: 1.6em;
   line-height: 1.6em;
   /* position: relative; */
-}
-
-nav {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  background-color: $dgrey;
-  margin-bottom: 60px;
-  z-index: 9999;
-
-  .container {
-    background-color: $dgrey;
-  }
 }
 
 .container {
@@ -110,43 +116,74 @@ nav {
   margin-top: 200px;
 }
 
-// Forms
+// Navigation
 
-input {
-  @include span-columns(12);
-  height: 50px;
-  padding-left: 20px;
-}
+nav {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  background-color: $dgrey;
+  padding: 16px 0;
+  margin-bottom: 60px;
+  z-index: 9999;
 
-.fakeButton {
-  position: relative;
-  overflow: auto;
-  background-color: $yellow;
-  height: 60px;
-
-  #imageFile {
-    opacity: 0;
-    height: 60px;
-    z-index: 2;
-    position: absolute;
+  .container {
+    background-color: $dgrey;
   }
 
-  span {
-    color: white;
-    position: absolute;
+  #logo {
+    @include span-columns(12);
+
+    div {
+      height: 50px;
+      width: 50px;
+      border: 1px solid white;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+  }
+
+  .textlinks {
+    @include span-columns(12);
+    margin: 16px 0 10px 0;
+  }
+
+  .textlinks a {
+    @include span-columns(4 of 12);
+    @include border-radius;
+    color: $yellow;
+    border: 1px solid $yellow;
     text-align: center;
-    width: 100%;
-    top: 16px;
-    left: 0;
-    right: 0;
-    z-index: 1;
+    padding: 3px 0;
+    text-transform: uppercase;
   }
-}
 
-button {
-  @include span-columns(12);
-  height: 60px;
-  margin-bottom: 20px;
+  .fakeButton {
+    @include border-radius;
+    @include span-columns(12);
+    position: relative;
+    overflow: auto;
+    background-color: $yellow;
+    height: 60px;
+
+    #imageFile {
+      opacity: 0;
+      height: 60px;
+      z-index: 2;
+      position: absolute;
+    }
+
+    span {
+      color: white;
+      position: absolute;
+      text-align: center;
+      width: 100%;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+    }
+  }
 }
 
 // Posts

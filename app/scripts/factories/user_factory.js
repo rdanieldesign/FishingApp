@@ -46,8 +46,8 @@
 		// Load the current user's posts
 		var loadUserPublished = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = 'where={"author":"'+ user.objectId + '", "status":"published"}';
-			return $http.get(catchURL + '?' + params, P_HEADERS);
+			var params = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"},"key":"catches"}, "status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		// Load the current user's posts
