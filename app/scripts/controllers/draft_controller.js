@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.controller('Draft', ['$scope', 'SingleFactory', 'RiverFactory', function($scope, SingleFactory, RiverFactory){
+	.controller('Draft', ['$scope', 'SingleFactory', 'RiverFactory', 'CreateFactory', function($scope, SingleFactory, RiverFactory, CreateFactory){
 
 		SingleFactory.getSingle().success( function(data){
 			$scope.fish = data.results[0];
@@ -17,6 +17,10 @@
 					"className": "rivers",
 					"objectId": river.objectId
 				};
+			});
+			CreateFactory.getWeather(singleGeo).success(function(data){
+				var weather = data;
+				$scope.fish.weather = weather;
 			});
 		});
 

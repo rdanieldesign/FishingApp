@@ -6,7 +6,7 @@
 
 		var filesURL = 'https://api.parse.com/1/files/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
-		var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
+		// var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
 		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 		var currentURL = 'https://api.parse.com/1/users/me/';
 
@@ -33,49 +33,46 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
-					getWeather();
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
 			} else {
 				alert('HTML5 Geolocation failure');
-				exifGeo();
+				// exifGeo();
 			}
 		};
 
 		// Exif Data Backup Geolocation
-		var exifGeo = function(){
-			EXIF.getData(file, function() {
-				console.log(this);
-				var aLat = EXIF.getTag(this, 'GPSLatitude');
-				var aLong = EXIF.getTag(this, 'GPSLongitude');
-				if (aLat && aLong) {
-					var latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-					var longRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
-					var fLat = (aLat[0].numerator + (aLat[1].numerator/aLat[1].denominator)/60 + (aLat[2].numerator/aLat[1].denominator)/3600) * (latRef === 'N' ? 1 : -1);
-					var fLong = (aLong[0].numerator + (aLong[1].numerator/ aLong[1].denominator)/60 + (aLong[2].numerator/aLong[1].denominator)/3600) * (longRef === 'W' ? -1 : 1);
-					// Set variable geo to this images geodata
-					geo = {
-						latitude: fLat,
-						longitude: fLong,
-						latitudeRef: latRef,
-						longitudeRef: longRef
-					};
-					alert('EXIF geodata success');
-					// Start Drafting Post
-					postPic();
-				}
-				else {
-					alert('geodata failure');
-				}
-			});
-		};
+		// var exifGeo = function(){
+		// 	EXIF.getData(file, function() {
+		// 		console.log(this);
+		// 		var aLat = EXIF.getTag(this, 'GPSLatitude');
+		// 		var aLong = EXIF.getTag(this, 'GPSLongitude');
+		// 		if (aLat && aLong) {
+		// 			var latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
+		// 			var longRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W';
+		// 			var fLat = (aLat[0].numerator + (aLat[1].numerator/aLat[1].denominator)/60 + (aLat[2].numerator/aLat[1].denominator)/3600) * (latRef === 'N' ? 1 : -1);
+		// 			var fLong = (aLong[0].numerator + (aLong[1].numerator/ aLong[1].denominator)/60 + (aLong[2].numerator/aLong[1].denominator)/3600) * (longRef === 'W' ? -1 : 1);
+		// 			// Set variable geo to this images geodata
+		// 			geo = {
+		// 				latitude: fLat,
+		// 				longitude: fLong,
+		// 				latitudeRef: latRef,
+		// 				longitudeRef: longRef
+		// 			};
+		// 			alert('EXIF geodata success');
+		// 			// Start Drafting Post
+		// 			postPic();
+		// 		}
+		// 		else {
+		// 			alert('geodata failure');
+		// 		}
+		// 	});
+		// };
 
-		var getWeather = function(){
-			var coords = '?lat='+ geo.latitude +'&lon='+ geo.longitude;
-			$http.get(weatherURL + coords + weatherKey).success( function(data){
-				weather = data;
-			});
+		var getWeather = function(singleGeo){
+			var coords = '?lat='+ singleGeo[0] +'&lon='+ singleGeo[1];
+			return $http.get(WEATHER + coords + weatherKey);
 		};
 
 		// Post picture and go to drafts
@@ -103,7 +100,7 @@
 				$http.post(catchURL, {
 					"picURL": picURL,
 					"geoData": geoData,
-					"weather": weather,
+					// "weather": weather,
 					"user": {
 						"__type": "Pointer",
 						"className": "_User",
@@ -132,7 +129,8 @@
 
 		return {
 			getCatches: getCatches,
-			getPublished: getPublished
+			getPublished: getPublished,
+			getWeather: getWeather
 		}
 
 	}]);

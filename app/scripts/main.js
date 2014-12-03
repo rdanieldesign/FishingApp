@@ -11,11 +11,7 @@
 		}
 	})
 
-	.constant('WEATHER', {
-		headers: {
-			'x-api-key': 'APPID=480997352b669d76eb0919fd6cf75263'
-		}
-	})
+	.constant('WEATHER', 'http://api.openweathermap.org/data/2.5/weather')
 
 	.config( function($routeProvider){
 
