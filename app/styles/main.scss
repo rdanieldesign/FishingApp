@@ -5,6 +5,17 @@
 // Partials
 @import 'colors';
 
+// Variables
+$cRadius: 1px;
+
+// Mixins
+@mixin border-radius {
+  -webkit-border-radius: $cRadius;
+  -moz-border-radius: $cRadius;
+  -ms-border-radius: $cRadius;
+  border-radius: $cRadius;
+}
+
 // Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
 
 @mixin omega-reset($nth) {
@@ -49,7 +60,7 @@ h5 {
 }
 
 ul, li {
-  webkit-margin-before: 0;
+  -webkit-margin-before: 0;
   -webkit-margin-after: 0;
   -webkit-margin-start: 0px;
   -webkit-margin-end: 0px;
@@ -62,16 +73,34 @@ a {
   color: $white;
 }
 
+// Forms
+
+input {
+  @include span-columns(12);
+  height: 50px;
+  padding-left: 20px;
+  border: none;
+  border-radius: none;
+  margin-bottom: 8px;
+}
+
+textarea {
+  @include span-columns(12);
+  max-width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: none;
+  margin-bottom: 8px;
+}
+
 button {
+  @include span-columns(12);
+  @include border-radius;
   background-color: $yellow;
   color: $white;
   border: none;
-  border-radius: none;
-}
-
-input {
-  border: none;
-  border-radius: none;
+  height: 60px;
+  margin-bottom: 8px;
 }
 
 // Custom Styles
@@ -80,20 +109,6 @@ input {
   width: 100%;
   font-size: 1.6em;
   line-height: 1.6em;
-  /* position: relative; */
-}
-
-nav {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  background-color: $dgrey;
-  margin-bottom: 60px;
-  z-index: 9999;
-
-  .container {
-    background-color: $dgrey;
-  }
 }
 
 .container {
@@ -101,7 +116,6 @@ nav {
   max-width: 1000px;
   margin: 0 auto;
   padding: 0 20px;
-  background-color: $white;
   color: $lgrey;
   overflow: auto;
 }
@@ -110,43 +124,111 @@ nav {
   margin-top: 200px;
 }
 
-// Forms
+// Navigation
 
-input {
-  @include span-columns(12);
-  height: 50px;
-  padding-left: 20px;
-}
+nav {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  background-color: $dgrey;
+  padding: 16px 0;
+  margin-bottom: 60px;
+  z-index: 9999;
 
-.fakeButton {
-  position: relative;
-  overflow: auto;
-  background-color: $yellow;
-  height: 60px;
-
-  #imageFile {
-    opacity: 0;
-    height: 60px;
-    z-index: 2;
-    position: absolute;
+  .container {
+    background-color: $dgrey;
   }
 
-  span {
-    color: white;
-    position: absolute;
+  #logo {
+    @include span-columns(12);
+
+    div {
+      height: 50px;
+      width: 50px;
+      border: 1px solid white;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+  }
+
+  .textlinks {
+    @include span-columns(12);
+    margin: 16px 0 10px 0;
+  }
+
+  .textlinks a {
+    @include span-columns(4 of 12);
+    @include border-radius;
+    color: $yellow;
+    border: 1px solid $yellow;
     text-align: center;
-    width: 100%;
-    top: 16px;
-    left: 0;
-    right: 0;
-    z-index: 1;
+    padding: 3px 0;
+    text-transform: uppercase;
+  }
+
+  .fakeButton {
+    @include border-radius;
+    @include span-columns(12);
+    position: relative;
+    overflow: auto;
+    background-color: $yellow;
+    height: 60px;
+
+    #imageFile {
+      opacity: 0;
+      height: 60px;
+      z-index: 2;
+      position: absolute;
+    }
+
+    span {
+      color: white;
+      position: absolute;
+      text-align: center;
+      width: 100%;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+    }
   }
 }
 
-button {
-  @include span-columns(12);
-  height: 60px;
-  margin-bottom: 20px;
+// Login
+
+.loginImage {
+  width: 160px;
+  height: 160px;
+  display: block;
+  margin: 40px auto 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid $yellow;
+}
+
+.loginText {
+  text-align: center;
+}
+
+.imageInput {
+  padding: 0;
+  margin: 0
+}
+
+#loginForm {
+
+  #loginButton {
+    background-color: $green;
+  }
+
+  #registerButton {
+    margin-bottom: 50px;
+  }
+
+  #logoutButton {
+    background-color: $red;
+    margin-bottom: 50px;
+  }
 }
 
 // Posts
@@ -171,6 +253,24 @@ button {
   }
 }
 
+// Draft View
+.draftImage {
+}
+
+#imageForm {
+
+  input {
+    margin-bottom: 8px;
+  }
+
+  .saveDraft {
+    background-color: $green;
+  }
+
+  .publishPost {
+  }
+}
+
 // Mapbox Styles
 
 #map {
@@ -180,6 +280,7 @@ button {
   right: 0;
   bottom: 0;
   background-color: $dgrey;
+  z-index: -1;
 
   .leaflet-top .leaflet-control {
     margin-top: 220px;
@@ -187,23 +288,51 @@ button {
   }
 }
 
+// Map Search
+
+.riverSearch {
+  @include span-columns(12);
+  padding-top: 22px;
+  padding-left: 40px;
+
+  input {
+    @include span-columns(12);
+    border-bottom: 3px solid $white;
+    text-align: center;
+    padding: 0;
+  }
+
+  ul {
+    @include span-columns(12);
+    margin-top: 0;
+  }
+
+  li {
+    @include span-columns(12);
+    background-color: white;
+    color: $lgrey;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid $white;
+    padding: 10px 0;
+  }
+
+}
+
 // River Profile
 
 .riverMap {
-  @include span-columns(4);
+  @include span-columns(12);
   height: 300px;
   position: relative;
 }
 
 .riverTitle {
-  @include span-columns(4);
-  height: 300px;
+  @include span-columns(12);
 }
 
 .riverConditions {
-  @include span-columns(4);
-  @include omega();
-  height: 300px;
+  @include span-columns(12);
 }
 
 .riverfilters {

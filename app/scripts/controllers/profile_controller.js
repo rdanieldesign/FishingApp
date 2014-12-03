@@ -5,10 +5,12 @@
 	.controller('Profile', ['$scope', 'UserFactory', function($scope, UserFactory){
 
 		UserFactory.loadUserPublished().success( function(data){
+			console.log(data);
 			$scope.myPublished = data.results;
 		});
 
 		UserFactory.loadUserDrafts().success( function(data){
+			console.log(data);
 			$scope.myDrafts = data.results;
 		});
 

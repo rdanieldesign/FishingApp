@@ -2,15 +2,10 @@
 
 	angular.module('FishingApp')
 
-	.controller('User', ['$scope', 'UserFactory', function($scope, UserFactory){
+	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
 
 		$scope.registerUser = function(user){
-			UserFactory.registerUser(user).success( function(){
-				$scope.loginUser(user);
-				$('#loginForm')[0].reset();
-			}).error( function(){
-				alert('Please provide a username and password.');
-			});
+			UserFactory.registerUser(user);
 		};
 
 		$scope.loginUser = function(user){
@@ -21,11 +16,11 @@
 			UserFactory.logout();
 		};
 
-		$scope.checkUser = function(){
-			UserFactory.checkUser();
-		};
+		UserFactory.watchFileInput();
 
 		UserFactory.checkUser();
+
+		$scope.user = $rootScope.currentUser;
 
 	}]);
 

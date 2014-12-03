@@ -1,1 +1,13 @@
 <div id='map'></div>
+<div class="container">
+	<div class="riverSearch">
+		<input type="text" ng-model="search" placeholder="Search Rivers">
+		<ul id="searchResults" ng-show="search">
+			<a href="#/river/{{river.objectId}}" ng-repeat="river in rivers | filter:search">
+				<li>
+					{{ river.features[0].properties.title }}
+				</li>
+			</a>
+		</ul>
+	</div>
+</div>

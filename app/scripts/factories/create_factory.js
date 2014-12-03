@@ -109,12 +109,7 @@
 						"className": "_User",
 						"objectId": currentUser.objectId
 					},
-					"river": {
-						"__type": "Pointer",
-						"className": "rivers",
-						"objectId": "nYPd56jbab"
-					},
-					status: 'draft'
+					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
 					var draftId = data.objectId;
