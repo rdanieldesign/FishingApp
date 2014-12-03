@@ -74,15 +74,10 @@
 
 	angular.module('FishingApp')
 
-	.controller('User', ['$scope', 'UserFactory', function($scope, UserFactory){
+	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
 
 		$scope.registerUser = function(user){
-			UserFactory.registerUser(user).success( function(){
-				$scope.loginUser(user);
-				$('#loginForm')[0].reset();
-			}).error( function(){
-				alert('Please provide a username and password.');
-			});
+			UserFactory.registerUser(user);
 		};
 
 		$scope.loginUser = function(user){
@@ -93,11 +88,11 @@
 			UserFactory.logout();
 		};
 
-		$scope.checkUser = function(){
-			UserFactory.checkUser();
-		};
+		UserFactory.watchFileInput();
 
 		UserFactory.checkUser();
+
+		$scope.user = $rootScope.currentUser;
 
 	}]);
 
@@ -106,9 +101,16 @@
 
 	angular.module('FishingApp')
 
-	.controller('Map', ['$scope', 'MapFactory', function($scope, MapFactory) {
+	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', function($scope, MapFactory, RiverFactory) {
 
 		MapFactory.startMap();
+
+		RiverFactory.getAllRivers().success(function(data){
+			$scope.rivers = data.results;
+		});
+
+		// Uncommenting the below function will create all rivers in rivers.js
+		// RiverFactory.createRivers();
 
 	}]);
 
@@ -120,10 +122,12 @@
 	.controller('Profile', ['$scope', 'UserFactory', function($scope, UserFactory){
 
 		UserFactory.loadUserPublished().success( function(data){
+			console.log(data);
 			$scope.myPublished = data.results;
 		});
 
 		UserFactory.loadUserDrafts().success( function(data){
+			console.log(data);
 			$scope.myDrafts = data.results;
 		});
 
@@ -135,11 +139,22 @@
 
 	angular.module('FishingApp')
 
-	.controller('Draft', ['$scope', 'SingleFactory', function($scope, SingleFactory){
+	.controller('Draft', ['$scope', 'SingleFactory', 'RiverFactory', function($scope, SingleFactory, RiverFactory){
 
 		SingleFactory.getSingle().success( function(data){
-			console.log(data);
 			$scope.fish = data.results[0];
+			var singleGeo = [];
+			singleGeo[0] = data.results[0].geoData.latitude;
+			singleGeo[1] = data.results[0].geoData.longitude;
+			var river;
+			RiverFactory.getAllRivers().success(function(data){
+				river = RiverFactory.getClosestRiver(data, singleGeo);
+				$scope.fish.river = {
+					"__type": "Pointer",
+					"className": "rivers",
+					"objectId": river.objectId
+				};
+			});
 		});
 
 		$scope.saveDraft = function(fish){
@@ -204,17 +219,58 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore',  function($http, P_HEADERS, $cookieStore){
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', function($http, P_HEADERS, $cookieStore, $rootScope){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
 		var currentURL = 'https://api.parse.com/1/users/me/';
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
+		var filesURL = 'https://api.parse.com/1/files/';
+
+		var currentFile;
+
+		var watchFileInput = function(){
+			// Upload new user avatar
+			$('#avatarUpload').bind('change', function(e) {
+				var files = e.target.files || e.dataTransfer.files;
+				// Our file var now holds the selected file
+				currentFile = files[0];
+				console.log(currentFile);
+			});
+		};
 
 		var registerUser =  function(user){
-			return $http.post(userURL, user, P_HEADERS, {
-				'username': user.username,
-				'password': user.password
+			console.log(user);
+
+			// Upload avatar to Parse
+			var currentFileURL = filesURL + currentFile.name;
+			$http.post(currentFileURL, currentFile, {
+				headers: {
+					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+					'Content-Type': currentFile.type
+				}
+			},
+			{
+				processData: false,
+				contentType: false,
+			}).success(function(data){
+				console.log('Image Uploaded Successfully');
+				console.log(data);
+				console.log(user);
+				$http.post(userURL, {
+					'username': user.username,
+					'password': user.password,
+					'avatar': data.url,
+					'name': user.name
+				}, P_HEADERS).success( function(){
+					console.log(user);
+					loginUser(user);
+				}).error( function(){
+					alert('Please provide a username and password.');
+				});
+			}).error(function(){
+					console.log('Image Upload Failed');
 			});
 		};
 
@@ -237,26 +293,26 @@
 		};
 
 		var checkUser = function (user) {
-			var user = $cookieStore.get('currentUser');
-			if(user !== undefined) {
-				alert('Welcome back ' + user.username);
-			} else {
-				alert('No User Logged In');
-			}
+			$rootScope.currentUser =  $cookieStore.get('currentUser');
 		};
 
 		// Load the current user's posts
 		var loadUserPublished = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = 'where={"author":"'+ user.objectId + '", "status":"published"}';
-			return $http.get(catchURL + '?' + params, P_HEADERS);
+			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
+		var getRiverCatches = function(){
+			var params = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ riverID +'"},"key":"catches"}}';
+			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		// Load the current user's posts
 		var loadUserDrafts = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = 'where={"author":"'+ user.objectId + '", "status":"draft"}';
-			return $http.get(catchURL + '?' + params, P_HEADERS);
+			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"draft"}';
+			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		return {
@@ -265,7 +321,8 @@
 			logout: logout,
 			checkUser: checkUser,
 			loadUserPublished: loadUserPublished,
-			loadUserDrafts: loadUserDrafts
+			loadUserDrafts: loadUserDrafts,
+			watchFileInput: watchFileInput
 		}
 
 	}]);
@@ -382,12 +439,7 @@
 						"className": "_User",
 						"objectId": currentUser.objectId
 					},
-					"river": {
-						"__type": "Pointer",
-						"className": "rivers",
-						"objectId": "nYPd56jbab"
-					},
-					status: 'draft'
+					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
 					var draftId = data.objectId;
@@ -432,7 +484,7 @@
 
 			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
 			.setView([39.656, -97.295], 5);
-
+			
 			// Query Catches and drop marker for each
 			$http.get(catchURL, P_HEADERS).success(function(data){
 				_.each(data.results, function(x){
@@ -554,10 +606,68 @@
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
+		var getClosestRiver = function(data, geo){
+			var closestRiver;
+			var allRivers = data.results;
+			var allCoords = [];
+			_.each(allRivers, function(river){
+				allCoords.push(river.features[0].geometry.coordinates);
+			});
+			var flattenedCoords = _.flatten(allCoords, 'shallow');
+			// Haversine Formula
+			var Haversine = function( lat1, lon1, lat2, lon2 ){
+				// Convert Degress to Radians
+				function Deg2Rad( deg ) {
+					return deg * Math.PI / 180;
+				}
+				var R = 6372.8; // Earth Radius in Kilometers
+				var dLat = Deg2Rad(lat2-lat1);
+				var dLon = Deg2Rad(lon2-lon1);
+				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+				Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
+				Math.sin(dLon/2) * Math.sin(dLon/2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+				var d = R * c;
+				// Return Distance in Kilometers
+				return d;
+			};
+
+			var getDist = [];
+			_.each(flattenedCoords, function(coordSet){
+				getDist.push(Haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
+			});
+			var minDist = _.min(getDist);
+			var closestRiver = _.findWhere(allRivers, function(river){
+				var theseCoords = river.features[0].geometry.coordinates;
+				Haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
+			});
+			return closestRiver;
+		};
+
+		var getAllRivers = function(){
+			return $http.get(riverURL, P_HEADERS);
+		};
+
+		var createRivers = function(river){
+			_.each(rivers, function(river){
+				var coordinates = river.features[0].geometry.coordinates;
+				_.each(coordinates, function(coordSet){
+					var lon = coordSet[0];
+					var lat = coordSet[1];
+					coordSet[0] = lat;
+					coordSet[1] = lon;
+				});
+				$http.post(riverURL, river, P_HEADERS);
+			});
+		};
+
 		return {
 			getRiverData: getRiverData,
 			getRiverCatches: getRiverCatches,
-			getRiverWeather: getRiverWeather
+			getRiverWeather: getRiverWeather,
+			getClosestRiver: getClosestRiver,
+			getAllRivers: getAllRivers,
+			createRivers: createRivers
 		};
 
 	}]);

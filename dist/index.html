@@ -20,10 +20,16 @@
     <div id="wrapper">
       <nav>
         <div class="container">
-          <a href="#/"><h1>FishingApp</h1></a>
-          <a href="#/login">Login</a>
-          <a href="#/maps">Map</a>
-          <a href="#/profile">My Profile</a>
+          <div id="logo">
+            <a href="#/">
+              <div></div>
+            </a>
+          </div>
+          <div class="textlinks">
+            <a href="#/login">Login</a>
+            <a href="#/maps">Map</a>
+            <a href="#/profile">Profile</a>
+          </div>
           <div class="fakeButton">
             <span>Get Image</span>
             <input id="imageFile" type="file" accept="image/*" capture="camera" ng-model="fish.image">
