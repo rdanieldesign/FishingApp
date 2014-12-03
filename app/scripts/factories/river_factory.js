@@ -34,32 +34,14 @@
 				allCoords.push(river.features[0].geometry.coordinates);
 			});
 			var flattenedCoords = _.flatten(allCoords, 'shallow');
-			// Haversine Formula
-			var Haversine = function( lat1, lon1, lat2, lon2 ){
-				// Convert Degress to Radians
-				function Deg2Rad( deg ) {
-					return deg * Math.PI / 180;
-				}
-				var R = 6372.8; // Earth Radius in Kilometers
-				var dLat = Deg2Rad(lat2-lat1);
-				var dLon = Deg2Rad(lon2-lon1);
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
-				Math.sin(dLon/2) * Math.sin(dLon/2);
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-				var d = R * c;
-				// Return Distance in Kilometers
-				return d;
-			};
-
 			var getDist = [];
 			_.each(flattenedCoords, function(coordSet){
-				getDist.push(Haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
+				getDist.push($rootScope.haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
 			});
 			var minDist = _.min(getDist);
 			var closestRiver = _.findWhere(allRivers, function(river){
 				var theseCoords = river.features[0].geometry.coordinates;
-				Haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
+				$rootScope.haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
 			});
 			return closestRiver;
 		};
@@ -81,6 +63,33 @@
 			});
 		};
 
+		var getRiverConditions = function(singleRiver){
+			var allCoords = singleRiver.features[0].geometry.coordinates;
+			var coords = allCoords[Math.round(allCoords.length/2)];
+			// Get the closest recorded conditions
+			var closest = _.min($rootScope.nsgs, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
+			});
+			// Store closest info in object
+			var info = {};
+			_.each(closest, function(condition){
+				if(condition.variable.oid == 45807197){
+					info.discharge = condition.variable;
+				}
+				else if(condition.variable.oid == 45807202){
+					info.gageHeight = condition.variable;
+				}
+				else if(condition.variable.oid == 45807042){
+					info.waterTemp = condition.variable;
+				}
+				else if(condition.variable.oid == 45807073){
+					info.airTemp = condition.variable;
+				}
+			});
+			return info;
+		};
+
 		var getNSGS = function(){
 			$http.get(NSGS).success(function(data){
 				var array = data.value.timeSeries;
@@ -98,6 +107,7 @@
 			getClosestRiver: getClosestRiver,
 			getAllRivers: getAllRivers,
 			createRivers: createRivers,
+			getRiverConditions: getRiverConditions,
 			getNSGS: getNSGS
 		};
 

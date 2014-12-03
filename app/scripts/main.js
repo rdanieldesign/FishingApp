@@ -57,11 +57,12 @@
 
 	})
 
-	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', function ($rootScope, $location, UserFactory, RiverFactory) {
+	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory) {
 		$rootScope.$on('$routeChangeStart', function() {
 			UserFactory.checkUser();
 		});
 		RiverFactory.getNSGS();
+		$rootScope.haversine = CreateFactory.haversine;
 	}]);
 
 }());

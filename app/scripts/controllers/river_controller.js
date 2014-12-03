@@ -9,6 +9,9 @@
 				var currentTemp = weather.main.temp;
 				$scope.currentTemp = currentTemp;
 			});
+			var riverInfo = RiverFactory.getRiverConditions(data);
+			$scope.currentInfo = riverInfo;
+			console.log($scope.currentInfo);
 			RiverFactory.getRiverCatches().success( function(data){
 				$scope.riverCatches = data.results;
 			});

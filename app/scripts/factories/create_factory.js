@@ -72,27 +72,10 @@
 
 		// With NSGS
 		var getConditions = function(singleGeo){
-			// Haversine Formula
-			var haversine = function( lat1, lon1, lat2, lon2 ){
-				// Convert Degress to Radians
-				function Deg2Rad( deg ) {
-					return deg * Math.PI / 180;
-				}
-				var R = 6372.8; // Earth Radius in Kilometers
-				var dLat = Deg2Rad(lat2-lat1);
-				var dLon = Deg2Rad(lon2-lon1);
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
-				Math.sin(dLon/2) * Math.sin(dLon/2);
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-				var d = R * c;
-				// Return Distance in Kilometers
-				return d;
-			};
 			// Get the closest recorded conditions
 			var closest = _.min($rootScope.nsgs, function(river){
 				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
-				return haversine(riverGeo.latitude, riverGeo.longitude, singleGeo[0], singleGeo[1]);
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, singleGeo[0], singleGeo[1]);
 			});
 			// Store closest info in object
 			var info = {};
@@ -110,7 +93,6 @@
 					info.airTemp = condition.variable;
 				}
 			});
-			console.log(info);
 			return info;
 		};
 
@@ -167,11 +149,30 @@
 			return $http.get(CATCHES + params, P_HEADERS);
 		};
 
+		// Haversine Formula
+		var haversine = function( lat1, lon1, lat2, lon2 ){
+			// Convert Degress to Radians
+			function Deg2Rad( deg ) {
+				return deg * Math.PI / 180;
+			}
+			var R = 6372.8; // Earth Radius in Kilometers
+			var dLat = Deg2Rad(lat2-lat1);
+			var dLon = Deg2Rad(lon2-lon1);
+			var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
+			Math.sin(dLon/2) * Math.sin(dLon/2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+			var d = R * c;
+			// Return Distance in Kilometers
+			return d;
+		};
+
 		return {
 			getCatches: getCatches,
 			getPublished: getPublished,
 			getWeather: getWeather,
-			getConditions: getConditions
+			getConditions: getConditions,
+			haversine: haversine
 		}
 
 	}]);
