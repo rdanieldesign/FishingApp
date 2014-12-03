@@ -54,6 +54,12 @@
 			controller: 'Otherwise'
 		});
 
-	});
+	})
+
+	.run(['$rootScope', '$location', 'UserFactory', function ($rootScope, $location, UserFactory) {
+		$rootScope.$on('$routeChangeStart', function() {
+			UserFactory.checkUser();
+		});
+	}]);
 
 }());

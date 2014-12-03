@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', function($http, P_HEADERS, $cookieStore, $rootScope){
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', '$location', function($http, P_HEADERS, $cookieStore, $rootScope, $location){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
@@ -77,6 +77,9 @@
 
 		var checkUser = function (user) {
 			$rootScope.currentUser =  $cookieStore.get('currentUser');
+			if($rootScope.currentUser === undefined){
+				$location.path('/login');
+			}
 		};
 
 		// Load the current user's posts
