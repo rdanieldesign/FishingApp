@@ -68,8 +68,17 @@
 			return $http.get(riverURL, P_HEADERS);
 		};
 
-		var createRiver = function(river){
-			return $http.post(riverURL, river, P_HEADERS);
+		var createRivers = function(river){
+			_.each(rivers, function(river){
+				var coordinates = river.features[0].geometry.coordinates;
+				_.each(coordinates, function(coordSet){
+					var lon = coordSet[0];
+					var lat = coordSet[1];
+					coordSet[0] = lat;
+					coordSet[1] = lon;
+				});
+				$http.post(riverURL, river, P_HEADERS);
+			});
 		};
 
 		return {
@@ -78,7 +87,7 @@
 			getRiverWeather: getRiverWeather,
 			getClosestRiver: getClosestRiver,
 			getAllRivers: getAllRivers,
-			createRiver: createRiver
+			createRivers: createRivers
 		};
 
 	}]);

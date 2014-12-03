@@ -14,7 +14,6 @@
 			});
 			$scope.river = data;
 			$scope.riverProps = data.features[0].properties;
-			console.log($scope.riverProps);
 			// Initiate slider
 			$('#tempSlider').noUiSlider({
 				start: [20, 80],
@@ -42,8 +41,6 @@
 		};
 
 		MapFactory.startRiverMap();
-
-		// RiverFactory.createRiver();
 
 	}]);
 

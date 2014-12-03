@@ -10,6 +10,9 @@
 			$scope.rivers = data.results;
 		});
 
+		// Uncommenting the below function will create all rivers in rivers.js
+		// RiverFactory.createRivers();
+
 	}]);
 
 }());
