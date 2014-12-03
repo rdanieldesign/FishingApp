@@ -44,7 +44,8 @@
 				$http.post(userURL, {
 					'username': user.username,
 					'password': user.password,
-					'avatar': data.url
+					'avatar': data.url,
+					'name': user.name
 				}, P_HEADERS).success( function(){
 					console.log(user);
 					loginUser(user);
@@ -75,12 +76,7 @@
 		};
 
 		var checkUser = function (user) {
-			var user = $cookieStore.get('currentUser');
-			if(user !== undefined) {
-				alert('Welcome back ' + user.username);
-			} else {
-				alert('No User Logged In');
-			}
+			$rootScope.currentUser =  $cookieStore.get('currentUser');
 		};
 
 		// Load the current user's posts

@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.controller('User', ['$scope', 'UserFactory', function($scope, UserFactory){
+	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
 
 		$scope.registerUser = function(user){
 			UserFactory.registerUser(user);
@@ -16,13 +16,11 @@
 			UserFactory.logout();
 		};
 
-		$scope.checkUser = function(){
-			UserFactory.checkUser();
-		};
-
 		UserFactory.watchFileInput();
 
-		// UserFactory.checkUser();
+		UserFactory.checkUser();
+
+		$scope.user = $rootScope.currentUser;
 
 	}]);
 

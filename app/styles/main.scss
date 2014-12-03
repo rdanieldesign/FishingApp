@@ -60,7 +60,7 @@ h5 {
 }
 
 ul, li {
-  webkit-margin-before: 0;
+  -webkit-margin-before: 0;
   -webkit-margin-after: 0;
   -webkit-margin-start: 0px;
   -webkit-margin-end: 0px;
@@ -81,6 +81,16 @@ input {
   padding-left: 20px;
   border: none;
   border-radius: none;
+  margin-bottom: 8px;
+}
+
+textarea {
+  @include span-columns(12);
+  max-width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: none;
+  margin-bottom: 8px;
 }
 
 button {
@@ -90,7 +100,7 @@ button {
   color: $white;
   border: none;
   height: 60px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 // Custom Styles
@@ -186,15 +196,29 @@ nav {
 
 // Login
 
-#loginForm {
+.loginImage {
+  width: 160px;
+  height: 160px;
+  display: block;
+  margin: 40px auto 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid $yellow;
+}
 
-  input {
-    margin-bottom: 8px;
-  }
+.loginText {
+  text-align: center;
+}
+
+.imageInput {
+  padding: 0;
+  margin: 0
+}
+
+#loginForm {
 
   #loginButton {
     background-color: $green;
-    margin-bottom: 8px;
   }
 
   #registerButton {
@@ -226,6 +250,24 @@ nav {
 
   p {
     margin-top: 0;
+  }
+}
+
+// Draft View
+.draftImage {
+}
+
+#imageForm {
+
+  input {
+    margin-bottom: 8px;
+  }
+
+  .saveDraft {
+    background-color: $green;
+  }
+
+  .publishPost {
   }
 }
 
@@ -280,20 +322,17 @@ nav {
 // River Profile
 
 .riverMap {
-  @include span-columns(4);
+  @include span-columns(12);
   height: 300px;
   position: relative;
 }
 
 .riverTitle {
-  @include span-columns(4);
-  height: 300px;
+  @include span-columns(12);
 }
 
 .riverConditions {
-  @include span-columns(4);
-  @include omega();
-  height: 300px;
+  @include span-columns(12);
 }
 
 .riverfilters {

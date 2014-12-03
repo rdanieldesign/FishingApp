@@ -10,7 +10,10 @@
 		<h5>Current Conditions</h5>
 		<p>Temperature: {{ currentTemp }}&deg;F</p>
 	</div>
-	<div class="riverfilters">
+</div>
+<!-- Filters -->
+<div class="riverfilters">
+	<div class="container">
 		<h5>Filter Recent Catches</h5>
 		<div class="tempFilter">
 			<h5>Temperature</h5>
@@ -19,13 +22,16 @@
 			<p>Max Temp: <span id="tempSlider_high"></span></p>
 		</div>
 	</div>
+</div>
+<!-- Catches -->
+<div class="container">
 	<ul class="grid">
 		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter">
 			<img src="{{ fish.picURL }}" alt="">
 			<div class="info">
-				<p>Species: {{ fish.species }}</p>
 				<p>Fly Used: {{ fish.fly }}</p>
 				<p>Temp: {{ fish.weather.main.temp }}</p>
+				<p>Notes: {{ fish.notes }}</p>
 			</div>
 		</li>
 	</ul>
