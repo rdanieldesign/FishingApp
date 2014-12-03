@@ -16,7 +16,7 @@
 	.constant('FILES', 'https://api.parse.com/1/files/')
 	.constant('CATCHES', 'https://api.parse.com/1/classes/catches/')
 	.constant('CURRENT_USER', 'https://api.parse.com/1/users/me/')
-	.constant('NSGS', 'http://waterservices.usgs.gov/nwis/iv/?format=json&indent=on&stateCd=ga&parameterCd=00011,00065,00060,00021&siteType=ST')
+	.constant('NSGS', 'http://waterservices.usgs.gov/nwis/iv/?format=json&indent=on&stateCd=ga&parameterCd=00065,00060,00020,00010&siteType=ST')
 
 	.config( function($routeProvider){
 

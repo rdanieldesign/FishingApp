@@ -22,6 +22,9 @@
 				var weather = data;
 				$scope.fish.weather = weather;
 			});
+			// Get current conditions
+			var conditions = CreateFactory.getConditions(singleGeo);
+			$scope.fish.conditions = conditions;
 		});
 
 		$scope.saveDraft = function(fish){

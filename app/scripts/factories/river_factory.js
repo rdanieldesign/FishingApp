@@ -83,7 +83,11 @@
 
 		var getNSGS = function(){
 			$http.get(NSGS).success(function(data){
-				$rootScope.nsgs = data.value.timeSeries;
+				var array = data.value.timeSeries;
+				var grouped = _.groupBy(array, function(x){
+					return x.sourceInfo.siteName;
+				});
+				$rootScope.nsgs = grouped;
 			});
 		};
 
