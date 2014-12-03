@@ -11,7 +11,7 @@
 		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 
 		var getRiverData = function(){
-			return $http.get(riverURL + riverID, P_HEADERS);
+			return $http.get(riverURL + $routeParams.id, P_HEADERS);
 		};
 
 		var getRiverCatches = function(){

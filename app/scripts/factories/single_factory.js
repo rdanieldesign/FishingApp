@@ -9,7 +9,7 @@
 		var singleId = $routeParams.fish;
 
 		var getSingle = function(){
-			var params = '?where={"objectId":"'+ singleId + '"}';
+			var params = '?where={"objectId":"'+ $routeParams.fish + '"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
