@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', function($http, $routeParams, P_HEADERS){
+	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', 'NSGS', '$rootScope', function($http, $routeParams, P_HEADERS, NSGS, $rootScope){
 
 		var riverID = $routeParams.id;
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -81,13 +81,20 @@
 			});
 		};
 
+		var getNSGS = function(){
+			$http.get(NSGS).success(function(data){
+				$rootScope.nsgs = data.value.timeSeries;
+			});
+		};
+
 		return {
 			getRiverData: getRiverData,
 			getRiverCatches: getRiverCatches,
 			getRiverWeather: getRiverWeather,
 			getClosestRiver: getClosestRiver,
 			getAllRivers: getAllRivers,
-			createRivers: createRivers
+			createRivers: createRivers,
+			getNSGS: getNSGS
 		};
 
 	}]);
