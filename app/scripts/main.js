@@ -61,8 +61,8 @@
 		$rootScope.$on('$routeChangeStart', function() {
 			UserFactory.checkUser();
 		});
-		RiverFactory.getNSGS();
 		$rootScope.haversine = CreateFactory.haversine;
+		RiverFactory.getNSGS();
 	}]);
 
 }());

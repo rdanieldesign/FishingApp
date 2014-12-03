@@ -5,13 +5,14 @@
 	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', function($scope, RiverFactory, MapFactory) {
 
 		RiverFactory.getRiverData().success(function(data){
-			RiverFactory.getRiverWeather(data).success(function(weather){
-				var currentTemp = weather.main.temp;
-				$scope.currentTemp = currentTemp;
-			});
+			// RiverFactory.getRiverWeather(data).success(function(weather){
+			// 	var currentTemp = weather.main.temp;
+			// 	$scope.currentTemp = currentTemp;
+			// });
 			var riverInfo = RiverFactory.getRiverConditions(data);
 			$scope.currentInfo = riverInfo;
 			console.log($scope.currentInfo);
+			console.log($scope.currentInfo.discharge.values[0].value[0].value);
 			RiverFactory.getRiverCatches().success( function(data){
 				$scope.riverCatches = data.results;
 			});

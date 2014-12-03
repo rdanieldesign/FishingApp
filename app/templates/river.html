@@ -9,6 +9,8 @@
 	<div class="riverConditions">
 		<h5>Current Conditions</h5>
 		<p>Temperature: {{ currentTemp }}&deg;F</p>
+		<p>Water Flow: {{ currentInfo.discharge.values[0].value[0].value }} cubic feet per second</p>
+		<p>Water Level: {{ currentInfo.gageHeight.values[0].value[0].value }} feet</p>
 	</div>
 </div>
 <!-- Filters -->

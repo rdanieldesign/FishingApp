@@ -81,16 +81,16 @@
 			var info = {};
 			_.each(closest, function(condition){
 				if(condition.variable.oid == 45807197){
-					info.discharge = condition.variable;
+					info.discharge = condition;
 				}
 				else if(condition.variable.oid == 45807202){
-					info.gageHeight = condition.variable;
+					info.gageHeight = condition;
 				}
 				else if(condition.variable.oid == 45807042){
-					info.waterTemp = condition.variable;
+					info.waterTemp = condition;
 				}
 				else if(condition.variable.oid == 45807073){
-					info.airTemp = condition.variable;
+					info.airTemp = condition;
 				}
 			});
 			return info;
