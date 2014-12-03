@@ -2,15 +2,8 @@
 
 	angular.module('FishingApp')
 
-	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', 'WEATHER', function($http, P_HEADERS, $rootScope, $location, $cookieStore, WEATHER){
+	.factory('CreateFactory', ['$http', 'P_HEADERS', '$rootScope', '$location', '$cookieStore', 'WEATHER', 'WEATHER_KEY', 'FILES', 'CATCHES', 'CURRENT_USER', function($http, P_HEADERS, $rootScope, $location, $cookieStore, WEATHER, WEATHER_KEY, FILES, CATCHES, CURRENT_USER){
 
-		var filesURL = 'https://api.parse.com/1/files/';
-		var catchURL = 'https://api.parse.com/1/classes/catches/';
-		// var weatherURL = 'http://api.openweathermap.org/data/2.5/weather';
-		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
-		var currentURL = 'https://api.parse.com/1/users/me/';
-
-		var file;
 		var geo;
 		var weather;
 
@@ -18,7 +11,7 @@
 		$('#imageFile').bind('change', function(e) {
 			var files = e.target.files || e.dataTransfer.files;
 			// Our file var now holds the selected file
-			file = files[0];
+			$rootScope.file = files[0];
 			// HTML5 Geolocation
 			getGeo();
 		});
@@ -33,6 +26,7 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
+					alert('Got geolocation!');
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
@@ -72,19 +66,19 @@
 
 		var getWeather = function(singleGeo){
 			var coords = '?lat='+ singleGeo[0] +'&lon='+ singleGeo[1];
-			return $http.get(WEATHER + coords + weatherKey);
+			return $http.get(WEATHER + coords + WEATHER_KEY);
 		};
 
 		// Post picture and go to drafts
 		var postPic = function(){
-			var currentFileURL = filesURL + file.name;
+			var currentFileURL = FILES + $rootScope.file.name;
 			// Set catches' user
 			var currentUser = $cookieStore.get('currentUser');
-			return $http.post(currentFileURL, file, {
+			return $http.post(currentFileURL, $rootScope.file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
 					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
-					'Content-Type': file.type
+					'Content-Type': $rootScope.file.type
 				}
 			},
 			{
@@ -97,7 +91,7 @@
 				// Set Catch geodata
 				var geoData = geo;
 				// Post Catch to Server
-				$http.post(catchURL, {
+				$http.post(CATCHES, {
 					"picURL": picURL,
 					"geoData": geoData,
 					// "weather": weather,
@@ -118,13 +112,13 @@
 
 		// Get all catches
 		var getCatches = function(){
-			return $http.get(catchURL, P_HEADERS);
+			return $http.get(CATCHES, P_HEADERS);
 		};
 
 		// Get all published catches
 		var getPublished = function(){
 			var params = '?where={"status":"published"}';
-			return $http.get(catchURL + params, P_HEADERS);
+			return $http.get(CATCHES + params, P_HEADERS);
 		};
 
 		return {

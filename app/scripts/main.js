@@ -12,6 +12,10 @@
 	})
 
 	.constant('WEATHER', 'http://api.openweathermap.org/data/2.5/weather')
+	.constant('WEATHER_KEY', '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263')
+	.constant('FILES', 'https://api.parse.com/1/files/')
+	.constant('CATCHES', 'https://api.parse.com/1/classes/catches/')
+	.constant('CURRENT_USER', 'https://api.parse.com/1/users/me/')
 
 	.config( function($routeProvider){
 
