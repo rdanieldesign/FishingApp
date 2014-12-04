@@ -2,13 +2,15 @@
 
 	angular.module('FishingApp')
 
-	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
+	.controller('User', ['$scope', 'UserFactory', '$rootScope', '$cookieStore', function($scope, UserFactory, $rootScope, $cookieStore){
 
-		$scope.user = $rootScope.currentUser;
-		console.log($scope.user);
-
-		if($scope.user){
-			$scope.signedIn = true;
+		var loggedIn = $cookieStore.get('currentUser');
+		if(loggedIn){
+			UserFactory.getCurrentUser(loggedIn).success(function(data){
+				$rootScope.currentUser = data;
+				$scope.user = $rootScope.currentUser;
+				$scope.signedIn = true;
+			});
 		}
 		else {
 			$scope.signedIn = false;

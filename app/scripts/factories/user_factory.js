@@ -18,7 +18,6 @@
 				var files = e.target.files || e.dataTransfer.files;
 				// Our file var now holds the selected file
 				currentFile = files[0];
-				console.log(currentFile);
 			});
 		};
 
@@ -35,7 +34,6 @@
 			var currentFileURL = filesURL + currentFile.name;
 			// Set catches' user
 			var currentUser = $cookieStore.get('currentUser');
-			console.log(currentUser);
 			return $http.post(currentFileURL, currentFile, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
@@ -102,6 +100,12 @@
 			}
 		};
 
+		var getCurrentUser = function(user){
+			var params = user.objectId;
+			console.log(params);
+			return $http.get(userURL + params, P_HEADERS);
+		};
+
 		// Load the current user's posts
 		var loadUserPublished = function(){
 			var user = $cookieStore.get('currentUser');
@@ -130,7 +134,8 @@
 			loadUserDrafts: loadUserDrafts,
 			watchFileInput: watchFileInput,
 			newUser: newUser,
-			updateUser: updateUser
+			updateUser: updateUser,
+			getCurrentUser: getCurrentUser
 		}
 
 	}]);
