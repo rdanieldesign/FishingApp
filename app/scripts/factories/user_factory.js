@@ -61,8 +61,6 @@
 					'Content-Type': 'application/json'
 					}
 				}).success(function(){
-					$cookieStore.remove('currentUser');
-					$cookieStore.put('currentUser', user);
 					$location.path('/');
 				});
 			});
