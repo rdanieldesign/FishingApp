@@ -5,6 +5,7 @@
 	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
 
 		$scope.user = $rootScope.currentUser;
+		console.log($scope.user);
 
 		if($scope.user){
 			$scope.signedIn = true;
