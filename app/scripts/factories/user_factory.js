@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', '$location', function($http, P_HEADERS, $cookieStore, $rootScope, $location){
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', '$location', '$routeParams', function($http, P_HEADERS, $cookieStore, $rootScope, $location, $routeParams){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
@@ -23,11 +23,20 @@
 		};
 
 		var registerUser =  function(user){
-			console.log(user);
+			return $http.post(userURL, {
+				'username': user.username,
+				'password': user.password
+				// 'avatar': data.url,
+				// 'name': user.name
+			}, P_HEADERS);
+		};
 
-			// Upload avatar to Parse
+		var updateUser = function(user){
 			var currentFileURL = filesURL + currentFile.name;
-			$http.post(currentFileURL, currentFile, {
+			// Set catches' user
+			var currentUser = $cookieStore.get('currentUser');
+			console.log(currentUser);
+			return $http.post(currentFileURL, currentFile, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
 					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
@@ -37,34 +46,43 @@
 			{
 				processData: false,
 				contentType: false,
-			}).success(function(data){
-				console.log('Image Uploaded Successfully');
-				console.log(data);
-				console.log(user);
-				$http.post(userURL, {
-					'username': user.username,
-					'password': user.password,
-					'avatar': data.url,
-					'name': user.name
-				}, P_HEADERS).success( function(){
-					console.log(user);
-					loginUser(user);
-				}).error( function(){
-					alert('Please provide a username and password.');
+			}).
+			success(function(data){
+				// Set Catch Image
+				var picURL = data.url;
+				$http.put(userURL + currentUser.objectId, {
+					"avatar": picURL,
+					"name": user.name
+				}, {
+					headers: {
+					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+					'X-Parse-Session-Token': currentUser.sessionToken,
+					'Content-Type': 'application/json'
+					}
+				}).success(function(){
+					$location.path('/');
 				});
-			}).error(function(){
-					console.log('Image Upload Failed');
+			});
+		};
+
+		var newUser = function(user){
+			var params = 'username='+user.username+'&password='+user.password;
+			return $http.get(loginURL + params, P_HEADERS)
+			.success( function(user){
+				$cookieStore.remove('currentUser');
+				$cookieStore.put('currentUser', user);
+				$location.path('/me/' + user.objectId);
 			});
 		};
 
 		var loginUser = function(user){
 			var params = 'username='+user.username+'&password='+user.password;
-			return $http.get(loginURL + params, P_HEADERS)
+			$http.get(loginURL + params, P_HEADERS)
 			.success( function(user){
-				$('#loginForm')[0].reset();
-				console.log(user.username + ' is logged in.');
 				$cookieStore.remove('currentUser');
 				$cookieStore.put('currentUser', user);
+				$location.path('/');
 			}).error( function(){
 				alert('Incorrect credentials.');
 			});
@@ -75,6 +93,8 @@
 			return checkUser();
 		};
 
+
+
 		var checkUser = function (user) {
 			$rootScope.currentUser =  $cookieStore.get('currentUser');
 			if($rootScope.currentUser === undefined){
@@ -83,7 +103,7 @@
 		};
 
 		// Load the current user's posts
-		var loadUserPublished = function(user){
+		var loadUserPublished = function(){
 			var user = $cookieStore.get('currentUser');
 			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
 			return $http.get(catchURL + params, P_HEADERS);
@@ -108,7 +128,9 @@
 			checkUser: checkUser,
 			loadUserPublished: loadUserPublished,
 			loadUserDrafts: loadUserDrafts,
-			watchFileInput: watchFileInput
+			watchFileInput: watchFileInput,
+			newUser: newUser,
+			updateUser: updateUser
 		}
 
 	}]);

@@ -50,6 +50,11 @@
 			controller: 'Draft'
 		});
 
+		$routeProvider.when('/me/:id', {
+			templateUrl: 'templates/me.html',
+			controller: 'Me'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
