@@ -33,8 +33,6 @@
 			UserFactory.logout();
 		};
 
-		UserFactory.checkUser();
-
 	}]);
 
 }());
