@@ -97,13 +97,16 @@
 	};
 
 		var getNSGS = function(){
-			$http.get(NSGS).success(function(data){
-				var array = data.value.timeSeries;
-				var grouped = _.groupBy(array, function(x){
-					return x.sourceInfo.siteName;
+			return $q(function(resolve){
+				$http.get(NSGS).success(function(data){
+					var array = data.value.timeSeries;
+					var grouped = _.groupBy(array, function(x){
+						return x.sourceInfo.siteName;
+					});
+					$rootScope.nsgs = grouped;
+					resolve($rootScope.nsgs);
 				});
-				$rootScope.nsgs = grouped;
-			});
+			})
 		};
 
 		return {

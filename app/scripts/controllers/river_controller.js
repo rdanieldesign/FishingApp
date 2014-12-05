@@ -2,24 +2,33 @@
 
 	angular.module('FishingApp')
 
-	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', function($scope, RiverFactory, MapFactory) {
+	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', '$rootScope', function($scope, RiverFactory, MapFactory, $rootScope) {
 
 		RiverFactory.getRiverData().success(function(data){
+			$scope.river = data;
+			$scope.riverProps = data.features[0].properties;
+
+			RiverFactory.getNSGS().then(function(){
+				console.log($rootScope.nsgs);
+				RiverFactory.getRiverConditions(data).then(function(results){
+					$scope.currentInfo = results;
+					console.log($scope.currentInfo);
+					$scope.tempFilter = function (fish) {
+						return fish.weather.main.temp >= $scope.low && fish.weather.main.temp <= $scope.high;
+					};
+					// console.log($scope.currentInfo.discharge.values[0].value[0].value);
+				});
+			});
 			// RiverFactory.getRiverWeather(data).success(function(weather){
 			// 	var currentTemp = weather.main.temp;
 			// 	$scope.currentTemp = currentTemp;
 			// });
-		  RiverFactory.getRiverConditions(data).then(function(results){
-				$scope.currentInfo = results;
-				console.log($scope.currentInfo);
-				// console.log($scope.currentInfo.discharge.values[0].value[0].value);
-			});
+
 			RiverFactory.getRiverCatches().success( function(data){
 				$scope.riverCatches = data.results;
 				// console.log($scope.riverCatches);
 			});
-			$scope.river = data;
-			$scope.riverProps = data.features[0].properties;
+
 			// Initiate slider
 			$('#tempSlider').noUiSlider({
 				start: [20, 80],
@@ -41,10 +50,6 @@
 			$scope.high = $('#tempSlider').val()[1];
 			$scope.$apply();
 		});
-
-		$scope.tempFilter = function (fish) {
-			return fish.weather.main.temp >= $scope.low && fish.weather.main.temp <= $scope.high;
-		};
 
 		MapFactory.startRiverMap();
 
