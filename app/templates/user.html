@@ -1,18 +1,1 @@
-<div class="container">
-	<div ng-show="signedIn" class="loginImage">
-		<img src="{{user.avatar}}" alt="">
-	</div>
-	<p class="loginText" ng-show="signedIn">Logged in as {{user.name}}</p>
-	<p class="loginText" ng-hide="signedIn">Sign in or Register</p>
-	<p class="loginText" ng-show="newUser">Add your name and a profile image!</p>
-	<form id="loginForm">
-		<input type="text" placeholder="Email" ng-model="user.username" ng-hide="signedIn">
-		<input type="password" placeholder="Password" ng-model="user.password" ng-hide="signedIn">
-		<input type="text" placeholder="Full Name" ng-show="newUser" ng-model="user.name">
-		<p ng-show="newUser">Choose an avatar image:</p>
-		<input class="imageInput" id="avatarUpload" type="file" accept="image/*" ng-show="newUser">
-		<button id="loginButton" ng-click="loginUser(user)" ng-hide="signedIn">Login</button>
-		<button id="registerButton" ng-click="registerUser(user)" ng-hide="signedIn">Register</button>
-		<button id="logoutButton" ng-show="signedIn" ng-click="logout()">Logout</button>
-	</form>
-</div>
+<h1>Hey</h1>

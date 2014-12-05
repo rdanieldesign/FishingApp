@@ -27,15 +27,27 @@
 	</div>
 </div>
 <!-- Catches -->
-<div class="container">
+<div class="container riverCatches">
 	<ul class="grid">
 		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter">
 			<img src="{{ fish.picURL }}" alt="">
 			<div class="info">
-				<p>Fly Used: {{ fish.fly }}</p>
-				<p>Temp: {{ fish.weather.main.temp }}</p>
-				<p>Notes: {{ fish.notes }}</p>
-				<img src="{{ fish.user.avatar }}" alt="">
+				<div class="userImage">
+					<a href="#/user/{{ fish.user.objectId }}">
+						<img src="{{ fish.user.avatar }}" alt="">
+					</a>
+				</div>
+				<div class="seeMore">
+					<a href="#/user/{{ fish.user.objectId }}">{{fish.user.name}}</a>
+					<a href="" ng-click="fish.toggle = !fish.toggle">
+						More Info
+						<span ng-hide="fish.toggle">-></span>
+						<span ng-show="fish.toggle">V</span>
+					</a>
+					<p ng-show="fish.toggle">Fly Used: {{ fish.fly }}</p>
+					<p ng-show="fish.toggle">Temp: {{ fish.weather.main.temp }}</p>
+					<p ng-show="fish.toggle">Notes: {{ fish.notes }}</p>
+				</div>
 			</div>
 		</li>
 	</ul>

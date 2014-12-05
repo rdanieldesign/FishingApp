@@ -246,6 +246,7 @@ nav {
   .info {
     width: 100%;
     padding: 6px;
+    overflow: auto;
   }
 
   p {
@@ -340,6 +341,21 @@ nav {
   background-color: $yellow;
 }
 
+.riverCatches {
+
+  .info {
+
+    .userImage {
+      @include span-columns(3 of 12);
+      height: 46px;
+      overflow: hidden;
+    }
+
+    .seeMore {
+      @include span-columns(9 of 12);
+    }
+  }
+}
 
 // Media Queries
 

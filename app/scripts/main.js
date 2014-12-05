@@ -26,7 +26,7 @@
 		});
 
 		$routeProvider.when('/login', {
-			templateUrl: 'templates/user.html',
+			templateUrl: 'templates/login.html',
 			controller: 'User'
 		});
 
@@ -53,6 +53,11 @@
 		$routeProvider.when('/me/:id', {
 			templateUrl: 'templates/me.html',
 			controller: 'Me'
+		});
+
+		$routeProvider.when('/user/:id', {
+			templateUrl: 'templates/user.html',
+			controller: 'Single'
 		});
 
 		$routeProvider.otherwise({
