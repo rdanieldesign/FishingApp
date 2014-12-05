@@ -2,7 +2,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', 'NSGS', '$rootScope', function($http, $routeParams, P_HEADERS, NSGS, $rootScope){
+	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', 'NSGS', '$rootScope', '$q', function($http, $routeParams, P_HEADERS, NSGS, $rootScope, $q){
 
 		var riverID = $routeParams.id;
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -15,7 +15,7 @@
 		};
 
 		var getRiverCatches = function(){
-			var params = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ riverID +'"},"key":"catches"}}';
+			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -64,6 +64,9 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
+			var info = {};
+
+			return $q(function(resolve){
 			var allCoords = singleRiver.features[0].geometry.coordinates;
 			var coords = allCoords[Math.round(allCoords.length/2)];
 			// Get the closest recorded conditions
@@ -71,8 +74,9 @@
 				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
 				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
 			});
+
 			// Store closest info in object
-			var info = {};
+
 			_.each(closest, function(condition){
 				if(condition.variable.oid == 45807197){
 					info.discharge = condition;
@@ -87,8 +91,10 @@
 					info.airTemp = condition;
 				}
 			});
-			return info;
-		};
+
+			resolve(info);
+		});
+	};
 
 		var getNSGS = function(){
 			$http.get(NSGS).success(function(data){
