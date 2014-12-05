@@ -5,16 +5,18 @@
 	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', '$rootScope', function($scope, RiverFactory, MapFactory, $rootScope) {
 
 		RiverFactory.getRiverData().success(function(data){
+
 			$scope.river = data;
 			$scope.riverProps = data.features[0].properties;
 
 			RiverFactory.getNSGS().then(function(){
 				RiverFactory.getRiverConditions(data).then(function(results){
 					$scope.currentInfo = results;
+					$scope.waterFlow = results.discharge.values[0].value[0].value;
+					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
 					$scope.tempFilter = function (fish) {
 						return fish.weather.main.temp >= $scope.low && fish.weather.main.temp <= $scope.high;
 					};
-					// console.log($scope.currentInfo.discharge.values[0].value[0].value);
 				});
 			});
 
@@ -26,7 +28,6 @@
 
 		RiverFactory.getRiverCatches().success( function(data){
 			$scope.riverCatches = data.results;
-			// console.log($scope.riverCatches);
 		});
 
 		// Initiate slider
@@ -46,7 +47,7 @@
 			$scope.high = $('#tempSlider').val()[1];
 			$scope.$apply();
 		});
-		
+
 		$scope.low = 20;
 		$scope.high = 80;
 
