@@ -65,7 +65,6 @@
 
 		var getRiverConditions = function(singleRiver){
 			var info = {};
-
 			return $q(function(resolve){
 			var allCoords = singleRiver.features[0].geometry.coordinates;
 			var coords = allCoords[Math.round(allCoords.length/2)];
@@ -97,13 +96,16 @@
 	};
 
 		var getNSGS = function(){
-			$http.get(NSGS).success(function(data){
-				var array = data.value.timeSeries;
-				var grouped = _.groupBy(array, function(x){
-					return x.sourceInfo.siteName;
+			return $q(function(resolve){
+				$http.get(NSGS).success(function(data){
+					var array = data.value.timeSeries;
+					var grouped = _.groupBy(array, function(x){
+						return x.sourceInfo.siteName;
+					});
+					$rootScope.nsgs = grouped;
+					resolve($rootScope.nsgs);
 				});
-				$rootScope.nsgs = grouped;
-			});
+			})
 		};
 
 		return {
