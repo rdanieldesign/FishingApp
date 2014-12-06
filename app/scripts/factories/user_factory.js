@@ -125,6 +125,12 @@
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
+		var getSingleCatches = function(){
+			console.log($routeParams);
+			var params = '?include=user&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ $routeParams.id +'"}, "status":"published"}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
 		return {
 			registerUser: registerUser,
 			loginUser: loginUser,
@@ -135,7 +141,8 @@
 			watchFileInput: watchFileInput,
 			newUser: newUser,
 			updateUser: updateUser,
-			getCurrentUser: getCurrentUser
+			getCurrentUser: getCurrentUser,
+			getSingleCatches: getSingleCatches
 		}
 
 	}]);

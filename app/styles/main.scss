@@ -249,6 +249,16 @@ nav {
     overflow: auto;
   }
 
+  .userImage {
+    @include span-columns(3 of 12);
+    height: 46px;
+    overflow: hidden;
+  }
+
+  .seeMore {
+    @include span-columns(9 of 12);
+  }
+
   p {
     margin-top: 0;
   }
@@ -339,21 +349,9 @@ nav {
 .riverfilters {
   @include span-columns(12);
   background-color: $yellow;
-}
 
-.riverCatches {
-
-  .info {
-
-    .userImage {
-      @include span-columns(3 of 12);
-      height: 46px;
-      overflow: hidden;
-    }
-
-    .seeMore {
-      @include span-columns(9 of 12);
-    }
+  .container {
+    color: white;
   }
 }
 
@@ -385,6 +383,19 @@ nav {
     @include span-columns(3);
     @include omega-reset(3n);
     @include omega(4n);
+  }
+
+  .riverMap {
+    @include span-columns(4);
+  }
+
+  .riverTitle {
+    @include span-columns(4);
+  }
+
+  .riverConditions {
+    @include span-columns(4);
+    @include omega();
   }
 
 }

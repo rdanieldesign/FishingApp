@@ -145,7 +145,7 @@
 
 		// Get all published catches
 		var getPublished = function(){
-			var params = '?where={"status":"published"}';
+			var params = '?include=user&where={"status":"published"}';
 			return $http.get(CATCHES + params, P_HEADERS);
 		};
 
