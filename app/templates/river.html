@@ -18,18 +18,28 @@
 <div class="riverfilters">
 	<div class="container">
 		<h5>Filter Recent Catches</h5>
+		<!-- 	air temp filter  -->
+		<input type="checkbox" ng-click="tempSwitch = !tempSwitch">
 		<div class="tempFilter">
 			<h5>Temperature</h5>
 			<div id="tempSlider"></div>
 			<p>Min. Temp: <span id="tempSlider_low"></span></p>
 			<p>Max Temp: <span id="tempSlider_high"></span></p>
 		</div>
+		<!-- water level filter -->
+		<input type="checkbox" ng-click="levelSwitch = !levelSwitch">
+		<div class="levelFilter">
+			<h5>Water Level</h5>
+			<div id="levelSlider"></div>
+			<p>Min. Water Level: <span id="levelSlider_low"></span></p>
+			<p>Max Water Level: <span id="levelSlider_high"></span></p>
+		</div>
 	</div>
 </div>
 <!-- Catches -->
 <div class="container riverCatches">
 	<ul class="grid">
-		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter">
+		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter | filter:levelFilter">
 			<img src="{{ fish.picURL }}" alt="">
 			<div class="info">
 				<div class="userImage">
@@ -45,7 +55,7 @@
 						<span ng-show="fish.toggle">V</span>
 					</a>
 					<p ng-show="fish.toggle">Fly Used: {{ fish.fly }}</p>
-					<p ng-show="fish.toggle">Temp: {{ fish.weather.main.temp }}</p>
+					<p ng-show="fish.toggle" ng-if="fish.weather.main.temp">Temp: {{ fish.weather.main.temp }}</p>
 					<p ng-show="fish.toggle">Notes: {{ fish.notes }}</p>
 				</div>
 			</div>
