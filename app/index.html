@@ -47,6 +47,9 @@
         </div>
       </nav>
       <div class="main" ng-view></div>
+      <div id="loaderDiv" loader>
+          <img src="images/spinner.gif" class="ajax-loader"/>
+      </div>
     </div>
 
     <!-- build:js scripts/vendor.js -->
@@ -79,6 +82,7 @@
         <script src="scripts/factories/map_factory.js"></script>
         <script src="scripts/factories/single_factory.js"></script>
         <script src="scripts/factories/river_factory.js"></script>
+        <script src="scripts/factories/loader_factory.js"></script>
         <script src="scripts/rivers.js"></script>
         <!-- endbuild -->
 
