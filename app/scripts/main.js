@@ -1,6 +1,6 @@
 (function(){
 
-	angular.module('FishingApp', ['ngRoute', 'ngCookies'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment'])
 
 	.constant('P_HEADERS', {
 		headers: {

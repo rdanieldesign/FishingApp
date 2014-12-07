@@ -65,6 +65,7 @@
 				</div>
 				<div class="seeMore">
 					<a href="#/user/{{ fish.user.objectId }}">{{fish.user.name}}</a>
+					<p>{{ fish.createdAt | amDateFormat:'MM/DD/YY, h:mmA'}}</p>
 					<a href="" ng-click="fish.toggle = !fish.toggle">
 						More Info
 						<span ng-hide="fish.toggle">-></span>
