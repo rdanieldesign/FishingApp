@@ -105,7 +105,7 @@
 			var currentFileURL = FILES + $rootScope.file.name;
 			// Set catches' user
 			var currentUser = $cookieStore.get('currentUser');
-			return $http.post(currentFileURL, $rootScope.file, {
+			$http.post(currentFileURL, $rootScope.file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
 					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
@@ -133,6 +133,7 @@
 					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
+					console.log(data);
 					var draftId = data.objectId;
 					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);

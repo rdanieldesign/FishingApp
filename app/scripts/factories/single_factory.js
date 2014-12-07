@@ -14,7 +14,7 @@
 		};
 
 		var saveDraft = function(fish){
-			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
 			.success( function(){
 				$location.path('/profile');
 			});
@@ -22,7 +22,7 @@
 
 		var publish = function(fish){
 			fish.status = "published";
-			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
 			.success( function(){
 				$http.put(riverURL + fish.river.objectId, {
 					"catches": {
