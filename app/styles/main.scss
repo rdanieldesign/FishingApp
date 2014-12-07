@@ -293,6 +293,17 @@ nav {
     float: left;
   }
 
+  .catchDate {
+    text-align: center;
+    font-size: 0.8em;
+
+    p {
+      margin: 0;
+      padding: 0;
+      padding-bottom: 7px;
+    }
+  }
+
   .userName {
     float: left;
     clear: right;
@@ -359,12 +370,15 @@ nav {
   right: 0;
   bottom: 0;
   background-color: $dgrey;
-  z-index: -1;
 
   .leaflet-top .leaflet-control {
     margin-top: 220px;
     margin-left: 20px;
   }
+}
+
+.fullMap {
+  z-index: -1;
 }
 
 // Map Search

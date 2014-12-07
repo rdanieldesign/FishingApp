@@ -37,11 +37,16 @@
 
 		};
 
-		var userMap = function(){
+		var userMap = function(user){
 			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
-			.setView([39.656, -97.295], 5);
-
-
+			.setView([32.986, -82.782], 7);
+			// Query Catches and drop marker for each
+			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}}';
+			$http.get(catchURL + params, P_HEADERS).success(function(data){
+				_.each(data.results, function(x){
+					L.marker([x.geoData.latitude, x.geoData.longitude]).addTo(map);
+				});
+			});
 		};
 
 		var startRiverMap = function(){

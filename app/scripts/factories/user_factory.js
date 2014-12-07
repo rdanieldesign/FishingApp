@@ -106,10 +106,16 @@
 			return $http.get(userURL + params, P_HEADERS);
 		};
 
+		var getThisUser = function(){
+			var user = $cookieStore.get('currentUser');
+			var params = user.objectId
+			return $http.get(userURL + params, P_HEADERS);
+		};
+
 		// Load the current user's posts
 		var loadUserPublished = function(){
 			var user = $cookieStore.get('currentUser');
-			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
+			var params = '?include=river&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -121,7 +127,7 @@
 		// Load the current user's posts
 		var loadUserDrafts = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"draft"}';
+			var params = '?include=river&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"draft"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -142,7 +148,8 @@
 			newUser: newUser,
 			updateUser: updateUser,
 			getCurrentUser: getCurrentUser,
-			getSingleCatches: getSingleCatches
+			getSingleCatches: getSingleCatches,
+			getThisUser: getThisUser
 		}
 
 	}]);
