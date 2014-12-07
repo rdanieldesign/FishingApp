@@ -56,11 +56,11 @@
 <div class="container riverCatches">
 	<ul class="grid">
 		<li class="postThumb" ng-repeat="fish in riverCatches | filter:tempFilter | filter:levelFilter | filter:flowFilter | filter:waterFilter">
-			<img src="{{ fish.picURL }}" alt="">
+			<img ng-src="{{ fish.picURL }}" alt="">
 			<div class="info">
 				<div class="userImage">
 					<a href="#/user/{{ fish.user.objectId }}">
-						<img src="{{ fish.user.avatar }}" alt="">
+						<img ng-src="{{ fish.user.avatar }}" alt="">
 					</a>
 				</div>
 				<span class="userName">

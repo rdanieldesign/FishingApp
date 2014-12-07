@@ -1,6 +1,6 @@
 <div class="container">
 	<div ng-show="signedIn" class="loginImage">
-		<img src="{{user.avatar}}" alt="">
+		<img ng-src="{{user.avatar}}" alt="">
 	</div>
 	<p class="loginText" ng-show="signedIn">Logged in as {{user.name}}</p>
 	<p class="loginText" ng-hide="signedIn">Sign in or Register</p>

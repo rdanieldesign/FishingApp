@@ -5,7 +5,6 @@
 	.controller('Single', ['$scope', 'UserFactory', function($scope, UserFactory){
 
 		UserFactory.getSingleCatches().success(function(data){
-			console.log(data);
 			$scope.allCatches = data.results;
 		});
 

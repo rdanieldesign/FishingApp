@@ -102,7 +102,6 @@
 
 		var getCurrentUser = function(user){
 			var params = user.objectId;
-			console.log(params);
 			return $http.get(userURL + params, P_HEADERS);
 		};
 
@@ -132,7 +131,6 @@
 		};
 
 		var getSingleCatches = function(){
-			console.log($routeParams);
 			var params = '?include=user&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ $routeParams.id +'"}, "status":"published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
