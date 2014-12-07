@@ -15,7 +15,7 @@
 		};
 
 		var getRiverCatches = function(){
-			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}}';
+			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}, "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 

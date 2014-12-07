@@ -13,6 +13,7 @@
 			// Our file var now holds the selected file
 			$rootScope.file = files[0];
 			// HTML5 Geolocation
+			$rootScope.$broadcast("loader_show");
 			getGeo();
 		});
 
@@ -27,6 +28,7 @@
 						"longitude": longitude,
 					};
 					alert('Got geolocation!');
+					$rootScope.$broadcast("loader_hide");
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
