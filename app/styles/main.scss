@@ -43,6 +43,7 @@ body {
 
 img {
   width: 100%;
+  display: block;
   margin: 0;
   padding: 0;
 }
@@ -70,7 +71,11 @@ ul, li {
 
 a {
   text-decoration: none;
-  color: $white;
+  color: $lgrey;
+
+  &:hover {
+    color: $yellow;
+  }
 }
 
 // Loader
@@ -275,19 +280,52 @@ nav {
 
   .info {
     width: 100%;
-    padding: 6px;
+    padding: 7px 7px 0 7px;
     overflow: auto;
   }
 
   .userImage {
     width: 46px;
     height: 46px;
+    margin-right: 7px;
+    margin-bottom: 7px;
     overflow: hidden;
+    float: left;
+  }
+
+  .userName {
+    float: left;
+    clear: right;
+
+    p, a {
+      margin: 0;
+      padding: 0
+    }
+
+    p {
+      font-size: 0.8em;
+    }
   }
 
   .seeMore {
-/*     @include span-columns(12 of 12);
- */  }
+    clear: both;
+    width: 100%;
+    border-top: 1px solid $white;
+    text-align: center;
+
+    a {
+      display: inline-block;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    p {
+      text-align: left;
+      margin: 0;
+      padding: 10px 0;
+      border-bottom: 1px solid $white;
+    }
+  }
 
   p {
     margin-top: 0;
