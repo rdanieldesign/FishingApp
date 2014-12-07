@@ -2,24 +2,28 @@
 
 	angular.module('FishingApp')
 
-	.controller('Profile', ['$scope', 'UserFactory', 'MapFactory', '$location', function($scope, UserFactory, MapFactory, $location){
+	.controller('Profile', ['$scope', '$rootScope', 'UserFactory', 'MapFactory', '$location', function($scope, $rootScope, UserFactory, MapFactory, $location){
 
 		UserFactory.getThisUser().success( function(data){
-			console.log(data);
 			MapFactory.userMap(data);
 			$scope.user = data;
 		});
 
 		UserFactory.loadUserPublished().success( function(data){
-			console.log(data);
 			$scope.myPublished = data.results;
 		});
 
 		UserFactory.loadUserDrafts().success( function(data){
-			console.log(data);
 			$scope.myDrafts = data.results;
 		});
 
+		// Map Filtering
+		$scope.$watch('filteredCatches', function() {
+			MapFactory.updateMap($scope.filteredCatches);
+		}, true);
+
+
+		// Edit draft
 		$scope.editDraft = function(draft){
 			var draftId = draft.objectId;
 			$location.path('/draft/' + draftId);
