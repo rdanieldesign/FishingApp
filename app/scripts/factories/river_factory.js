@@ -11,17 +11,22 @@
 		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 
 		var getRiverData = function(){
-			return $http.get(riverURL + $routeParams.id, P_HEADERS);
+			return $q(function(resolve){
+				var data = _.pairs($rootScope.nsgs);
+				var singleRiver = _.find(data, function(x){
+					return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
+				});
+				resolve(singleRiver);
+			});
 		};
 
 		var getRiverCatches = function(){
-			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}, "status": "published"}';
+			var params = '?include=user&where={"river": "' + $routeParams.id + '", "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		var getRiverWeather = function(river){
-			var coordsArray = river.features[0].geometry.coordinates;
-			var coords = coordsArray[Math.round(coordsArray.length/2)];
+			var coords = river[1][0].sourceInfo.geoLocation.geogLocation;
 			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
 			return $http.get(weatherURL + params + weatherKey);
 		};
@@ -66,17 +71,7 @@
 		var getRiverConditions = function(singleRiver){
 			var info = {};
 			return $q(function(resolve){
-			var allCoords = singleRiver.features[0].geometry.coordinates;
-			var coords = allCoords[Math.round(allCoords.length/2)];
-			// Get the closest recorded conditions
-			var closest = _.min($rootScope.nsgs, function(river){
-				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
-				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
-			});
-
-			// Store closest info in object
-
-			_.each(closest, function(condition){
+			_.each(singleRiver[1], function(condition){
 				if(condition.variable.oid == 45807197){
 					info.discharge = condition;
 				}
@@ -104,6 +99,7 @@
 					});
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
+					console.log($rootScope.nsgs);
 				});
 			})
 		};

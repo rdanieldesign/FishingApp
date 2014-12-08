@@ -23,14 +23,14 @@
 			// });
 
 			// Get Rivers from rivers.js and populate map
-			$http.get(riverURL, P_HEADERS).success(function(data){
-				var rivers = data.results;
-				_.each(rivers, function(river){
-					var coordinates = river.features[0].geometry.coordinates;
-					var options = river.features[0].properties;
-					var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo($rootScope.map);
-				});
-			});
+			// $http.get(riverURL, P_HEADERS).success(function(data){
+			// 	var rivers = data.results;
+			// 	_.each(rivers, function(river){
+			// 		var coordinates = river.features[0].geometry.coordinates;
+			// 		var options = river.features[0].properties;
+			// 		var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo($rootScope.map);
+			// 	});
+			// });
 
 			// // zoom the map to the polyline
 			// map.fitBounds(riverLine.getBounds());

@@ -2,13 +2,12 @@
 
 	angular.module('FishingApp')
 
-	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', function($scope, MapFactory, RiverFactory) {
+	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', '$rootScope', function($scope, MapFactory, RiverFactory, $rootScope) {
 
 		MapFactory.startMap();
 
-		RiverFactory.getAllRivers().success(function(data){
-			$scope.rivers = data.results;
-		});
+		$scope.rivers = _.pairs($rootScope.nsgs);
+		console.log($scope.rivers);
 
 		// Uncommenting the below function will create all rivers in rivers.js
 		// RiverFactory.createRivers();
