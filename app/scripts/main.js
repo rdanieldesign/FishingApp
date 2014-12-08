@@ -1,6 +1,6 @@
 (function(){
 
-	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment', 'ngStorage'])
 
 	.constant('P_HEADERS', {
 		headers: {
@@ -67,12 +67,15 @@
 
 	})
 
-	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory) {
+	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', '$localStorage', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory, $localStorage) {
 		$rootScope.$on('$routeChangeStart', function() {
 			UserFactory.checkUser();
 		});
+		$rootScope.$storage = $localStorage;
 		$rootScope.haversine = CreateFactory.haversine;
-		RiverFactory.getNSGS();
+		RiverFactory.getNSGS().then(function(data){
+			$rootScope.$storage.nsgs = data;
+		});
 	}])
 
 	.directive("loader", function ($rootScope) {

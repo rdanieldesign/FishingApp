@@ -12,7 +12,7 @@
 
 		var getRiverData = function(){
 			return $q(function(resolve){
-				var data = _.pairs($rootScope.nsgs);
+				var data = _.pairs($rootScope.$storage.nsgs);
 				var singleRiver = _.find(data, function(x){
 					return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
 				});

@@ -20,7 +20,6 @@
 			});
 			// Get current conditions
 			RiverFactory.getRiverConditions(river).then(function(results){
-				console.log(results);
 				$scope.fish.conditions = results;
 			});
 		});
