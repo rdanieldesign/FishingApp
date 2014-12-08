@@ -22,20 +22,8 @@
 
 		var publish = function(fish){
 			fish.status = "published";
-			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
-			.success( function(){
-				$http.put(riverURL + fish.river.objectId, {
-					"catches": {
-						"__op":"AddRelation",
-						"objects": [{
-							"__type": "Pointer",
-							"className": "catches",
-							"objectId": fish.objectId
-						}]
-					}
-				}, P_HEADERS).success(function(){
-					$location.path('/maps');
-				});
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS).success(function(){
+				$location.path('/maps');
 			});
 		};
 

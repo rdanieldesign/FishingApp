@@ -4,23 +4,19 @@
 
 	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', '$rootScope', function($scope, RiverFactory, MapFactory, $rootScope) {
 
-		RiverFactory.getRiverData().success(function(data){
-
+		RiverFactory.getRiverData().then(function(data){
 			$scope.river = data;
-			$scope.riverProps = data.features[0].properties;
 			var airTemperature;
-
-			RiverFactory.getNSGS().then(function(){
-				RiverFactory.getRiverConditions(data).then(function(results){
-					$scope.currentInfo = results;
-					$scope.waterFlow = results.discharge.values[0].value[0].value;
-					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
-					if(results.airTemp){
-						airTemperature = results.airTemp.values[0].value[0].value;
-					};
-				});
+			// Conditions
+			RiverFactory.getRiverConditions(data[1]).then(function(results){
+				$scope.currentInfo = results;
+				$scope.waterFlow = results.discharge.values[0].value[0].value;
+				$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+				if(results.airTemp){
+					airTemperature = results.airTemp.values[0].value[0].value;
+				};
 			});
-
+			// Weather
 			RiverFactory.getRiverWeather(data).success(function(weather){
 				if(!airTemperature){
 					airTemperature = weather.main.temp;
@@ -31,7 +27,6 @@
 
 		RiverFactory.getRiverCatches().success( function(data){
 			$scope.riverCatches = data.results;
-			console.log($scope.riverCatches);
 		});
 
 		$scope.tempFilter = function(fish) {

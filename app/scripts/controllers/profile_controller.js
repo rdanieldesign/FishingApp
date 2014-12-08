@@ -30,6 +30,21 @@
 		};
 
 		// Filters
+		$scope.riverFilter = function(fish) {
+			if(fish.riverName && $scope.riverSwitch){
+				return fish.riverName;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.setRiver = function(river){
+			if($scope.riverSwitch){
+				$scope.riverFilter =  river;
+			} else {
+				return;
+			}
+		};
 
 		$scope.tempFilter = function(fish) {
 			if(fish.weather && $scope.tempSwitch){

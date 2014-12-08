@@ -11,43 +11,36 @@
 		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 
 		var getRiverData = function(){
-			return $http.get(riverURL + $routeParams.id, P_HEADERS);
+			return $q(function(resolve){
+				var data = _.pairs($rootScope.$storage.nsgs);
+				var singleRiver = _.find(data, function(x){
+					return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
+				});
+				resolve(singleRiver);
+			});
 		};
 
 		var getRiverCatches = function(){
-			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}, "status": "published"}';
+			var params = '?include=user&where={"riverId": "' + $routeParams.id + '", "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		var getRiverWeather = function(river){
-			var coordsArray = river.features[0].geometry.coordinates;
-			var coords = coordsArray[Math.round(coordsArray.length/2)];
+			var coords = river[1][0].sourceInfo.geoLocation.geogLocation;
 			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
-		var getClosestRiver = function(data, geo){
-			var closestRiver;
-			var allRivers = data.results;
-			var allCoords = [];
-			_.each(allRivers, function(river){
-				allCoords.push(river.features[0].geometry.coordinates);
+		var getClosestRiver = function(geo){
+			var allRivers = $rootScope.nsgs;
+			return _.min(allRivers, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, geo[0], geo[1]);
 			});
-			var flattenedCoords = _.flatten(allCoords, 'shallow');
-			var getDist = [];
-			_.each(flattenedCoords, function(coordSet){
-				getDist.push($rootScope.haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
-			});
-			var minDist = _.min(getDist);
-			var closestRiver = _.findWhere(allRivers, function(river){
-				var theseCoords = river.features[0].geometry.coordinates;
-				$rootScope.haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
-			});
-			return closestRiver;
 		};
 
 		var getAllRivers = function(){
-			return $http.get(riverURL, P_HEADERS);
+			// return $http.get(riverURL, P_HEADERS);
 		};
 
 		var createRivers = function(river){
@@ -64,19 +57,10 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
+			console.log(singleRiver);
 			var info = {};
 			return $q(function(resolve){
-			var allCoords = singleRiver.features[0].geometry.coordinates;
-			var coords = allCoords[Math.round(allCoords.length/2)];
-			// Get the closest recorded conditions
-			var closest = _.min($rootScope.nsgs, function(river){
-				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
-				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
-			});
-
-			// Store closest info in object
-
-			_.each(closest, function(condition){
+			_.each(singleRiver, function(condition){
 				if(condition.variable.oid == 45807197){
 					info.discharge = condition;
 				}
@@ -90,7 +74,6 @@
 					info.airTemp = condition;
 				}
 			});
-
 			resolve(info);
 		});
 	};
@@ -104,6 +87,8 @@
 					});
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
+					console.log($rootScope.nsgs);
+					console.log(_.pairs($rootScope.nsgs));
 				});
 			})
 		};

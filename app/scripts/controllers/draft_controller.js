@@ -9,22 +9,20 @@
 			var singleGeo = [];
 			singleGeo[0] = data.results[0].geoData.latitude;
 			singleGeo[1] = data.results[0].geoData.longitude;
-			var river;
-			RiverFactory.getAllRivers().success(function(data){
-				river = RiverFactory.getClosestRiver(data, singleGeo);
-				$scope.fish.river = {
-					"__type": "Pointer",
-					"className": "rivers",
-					"objectId": river.objectId
-				};
-			});
+			// Get Closest River
+			var river = RiverFactory.getClosestRiver(singleGeo);
+			$scope.fish.details = river;
+			$scope.fish.riverId = river[0].sourceInfo.siteCode[0].value;
+			$scope.fish.riverName = river[0].sourceInfo.siteName;
+			//Get weather
 			CreateFactory.getWeather(singleGeo).success(function(data){
 				var weather = data;
 				$scope.fish.weather = weather;
 			});
 			// Get current conditions
-			var conditions = CreateFactory.getConditions(singleGeo);
-			$scope.fish.conditions = conditions;
+			RiverFactory.getRiverConditions(river).then(function(results){
+				$scope.fish.conditions = results;
+			});
 		});
 
 		$scope.saveDraft = function(fish){
