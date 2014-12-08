@@ -229,6 +229,36 @@ nav {
   }
 }
 
+.reducedNav {
+
+  #logo {
+    @include span-columns(6);
+
+    div {
+      float: left;
+      margin: 0;
+      height: 50px;
+    }
+  }
+
+  .textlinks {
+    display: none;
+  }
+
+  .fakeButton {
+    @include span-columns(6);
+    height: 50px;
+
+    #imageFile {
+      height: 50px;
+    }
+
+    span {
+      top: 12px;
+    }
+  }
+}
+
 // Login
 
 .loginImage {

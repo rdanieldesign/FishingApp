@@ -88,6 +88,23 @@
 				return element.hide();
 			});
 		};
+	})
+
+	.directive("scroll", function ($window) {
+		return function($scope, element, attrs) {
+			var lastScrollTop = 0;
+			$(window).scroll(function(event){
+				if($(this).scrollTop() > 100){
+					var st = $(this).scrollTop();
+					if (st > lastScrollTop){
+						$('nav').addClass('reducedNav');
+					} else {
+						$('nav').removeClass('reducedNav');
+					}
+					lastScrollTop = st;
+				};
+			});
+		};
 	});
 
 }());

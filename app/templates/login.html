@@ -2,7 +2,7 @@
 	<div ng-show="signedIn" class="loginImage">
 		<img ng-src="{{user.avatar}}" alt="">
 	</div>
-	<p class="loginText" ng-show="signedIn">Logged in as {{user.name}}</p>
+	<p class="loginText" ng-show="signedIn">Logged in as {{user.name}} <a href="#/me/{{user.objectId}}">edit profile</a></p></p>
 	<p class="loginText" ng-hide="signedIn">Sign in or Register</p>
 	<p class="loginText" ng-show="newUser">Add your name and a profile image!</p>
 	<form id="loginForm">
