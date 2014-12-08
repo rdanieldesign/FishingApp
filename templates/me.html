@@ -1,0 +1,9 @@
+<div class="container">
+	<p class="loginText">Add your name and a profile image!</p>
+	<form id="loginForm">
+		<input type="text" placeholder="Full Name" ng-model="user.name">
+		<p>Choose an avatar image:</p>
+		<input class="imageInput" id="avatarUpload" type="file" accept="image/*">
+		<button id="loginButton" ng-click="updateUser(user)">Update</button>
+	</form>
+</div>
