@@ -31,24 +31,12 @@
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
-		var getClosestRiver = function(data, geo){
-			var closestRiver;
-			var allRivers = _.pairs($rootScope.nsgs);
-			var allCoords = [];
-			_.each(allRivers, function(river){
-				allCoords.push(river.features[0].geometry.coordinates);
+		var getClosestRiver = function(geo){
+			var allRivers = $rootScope.nsgs;
+			return _.min(allRivers, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, geo[0], geo[1]);
 			});
-			var flattenedCoords = _.flatten(allCoords, 'shallow');
-			var getDist = [];
-			_.each(flattenedCoords, function(coordSet){
-				getDist.push($rootScope.haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
-			});
-			var minDist = _.min(getDist);
-			var closestRiver = _.findWhere(allRivers, function(river){
-				var theseCoords = river.features[0].geometry.coordinates;
-				$rootScope.haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
-			});
-			return closestRiver;
 		};
 
 		var getAllRivers = function(){
@@ -85,7 +73,6 @@
 					info.airTemp = condition;
 				}
 			});
-
 			resolve(info);
 		});
 	};

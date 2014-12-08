@@ -67,14 +67,13 @@
 
 		var startRiverMap = function(){
 			var params = $routeParams.id;
-			$http.get(riverURL + params, P_HEADERS).success(function(data){
-				var coordinates = data.features[0].geometry.coordinates;
-				var options = data.features[0].properties;
-				var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446');
-				var polyline = L.polyline(coordinates, options).addTo(map);
-				// zoom the map to the polyline
-				map.fitBounds(polyline.getBounds());
+			var data = _.pairs($rootScope.nsgs);
+			var singleRiver = _.find(data, function(x){
+				return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
 			});
+			var coords = singleRiver[1][0].sourceInfo.geoLocation.geogLocation;
+			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446').setView([coords.latitude, coords.longitude], 12);
+			var riverCoords = L.marker([coords.latitude, coords.longitude]).addTo(map);;
 		};
 
 

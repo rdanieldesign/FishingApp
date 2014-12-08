@@ -10,20 +10,18 @@
 			singleGeo[0] = data.results[0].geoData.latitude;
 			singleGeo[1] = data.results[0].geoData.longitude;
 			// RiverFactory.getAllRivers().success(function(data){
-				var river = RiverFactory.getClosestRiver(data, singleGeo);
-				$scope.fish.river = {
-					"__type": "Pointer",
-					"className": "rivers",
-					"objectId": river.objectId
-				};
+				var river = RiverFactory.getClosestRiver(singleGeo);
+				console.log(river);
+				$scope.fish.details = river;
+				console.log($scope.fish.details);
 			// });
 			CreateFactory.getWeather(singleGeo).success(function(data){
 				var weather = data;
 				$scope.fish.weather = weather;
 			});
-			// Get current conditions
-			var conditions = CreateFactory.getConditions(singleGeo);
-			$scope.fish.conditions = conditions;
+			// // Get current conditions
+			// var conditions = CreateFactory.getConditions(singleGeo);
+			// $scope.fish.conditions = conditions;
 		});
 
 		$scope.saveDraft = function(fish){
