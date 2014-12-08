@@ -21,7 +21,7 @@
 		};
 
 		var getRiverCatches = function(){
-			var params = '?include=user&where={"river": "' + $routeParams.id + '", "status": "published"}';
+			var params = '?include=user&where={"riverId": "' + $routeParams.id + '", "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -33,7 +33,7 @@
 
 		var getClosestRiver = function(data, geo){
 			var closestRiver;
-			var allRivers = data.results;
+			var allRivers = _.pairs($rootScope.nsgs);
 			var allCoords = [];
 			_.each(allRivers, function(river){
 				allCoords.push(river.features[0].geometry.coordinates);
@@ -52,7 +52,7 @@
 		};
 
 		var getAllRivers = function(){
-			return $http.get(riverURL, P_HEADERS);
+			// return $http.get(riverURL, P_HEADERS);
 		};
 
 		var createRivers = function(river){
@@ -100,6 +100,7 @@
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
 					console.log($rootScope.nsgs);
+					console.log(_.pairs($rootScope.nsgs));
 				});
 			})
 		};

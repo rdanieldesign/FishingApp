@@ -9,15 +9,14 @@
 			var singleGeo = [];
 			singleGeo[0] = data.results[0].geoData.latitude;
 			singleGeo[1] = data.results[0].geoData.longitude;
-			var river;
-			RiverFactory.getAllRivers().success(function(data){
-				river = RiverFactory.getClosestRiver(data, singleGeo);
+			// RiverFactory.getAllRivers().success(function(data){
+				var river = RiverFactory.getClosestRiver(data, singleGeo);
 				$scope.fish.river = {
 					"__type": "Pointer",
 					"className": "rivers",
 					"objectId": river.objectId
 				};
-			});
+			// });
 			CreateFactory.getWeather(singleGeo).success(function(data){
 				var weather = data;
 				$scope.fish.weather = weather;
