@@ -1,6 +1,6 @@
 (function(){
 
-	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment', 'ngStorage'])
 
 	.constant('P_HEADERS', {
 		headers: {
@@ -67,12 +67,16 @@
 
 	})
 
-	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory) {
+	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', '$localStorage', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory, $localStorage) {
 		$rootScope.$on('$routeChangeStart', function() {
 			UserFactory.checkUser();
 		});
+		$rootScope.$storage = $localStorage;
 		$rootScope.haversine = CreateFactory.haversine;
-		RiverFactory.getNSGS();
+		RiverFactory.getNSGS().then(function(data){
+			$localStorage.$reset();
+			$rootScope.$storage.nsgs = data;
+		});
 	}])
 
 	.directive("loader", function ($rootScope) {
@@ -144,13 +148,12 @@
 
 	angular.module('FishingApp')
 
-	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', function($scope, MapFactory, RiverFactory) {
+	.controller('Map', ['$scope', 'MapFactory', 'RiverFactory', '$rootScope', function($scope, MapFactory, RiverFactory, $rootScope) {
 
 		MapFactory.startMap();
 
-		RiverFactory.getAllRivers().success(function(data){
-			$scope.rivers = data.results;
-		});
+		$scope.rivers = _.pairs($rootScope.nsgs);
+		console.log($scope.rivers);
 
 		// Uncommenting the below function will create all rivers in rivers.js
 		// RiverFactory.createRivers();
@@ -190,6 +193,21 @@
 		};
 
 		// Filters
+		$scope.riverFilter = function(fish) {
+			if(fish.riverName && $scope.riverSwitch){
+				return fish.riverName;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.setRiver = function(river){
+			if($scope.riverSwitch){
+				$scope.riverFilter =  river;
+			} else {
+				return;
+			}
+		};
 
 		$scope.tempFilter = function(fish) {
 			if(fish.weather && $scope.tempSwitch){
@@ -319,22 +337,20 @@
 			var singleGeo = [];
 			singleGeo[0] = data.results[0].geoData.latitude;
 			singleGeo[1] = data.results[0].geoData.longitude;
-			var river;
-			RiverFactory.getAllRivers().success(function(data){
-				river = RiverFactory.getClosestRiver(data, singleGeo);
-				$scope.fish.river = {
-					"__type": "Pointer",
-					"className": "rivers",
-					"objectId": river.objectId
-				};
-			});
+			// Get Closest River
+			var river = RiverFactory.getClosestRiver(singleGeo);
+			$scope.fish.details = river;
+			$scope.fish.riverId = river[0].sourceInfo.siteCode[0].value;
+			$scope.fish.riverName = river[0].sourceInfo.siteName;
+			//Get weather
 			CreateFactory.getWeather(singleGeo).success(function(data){
 				var weather = data;
 				$scope.fish.weather = weather;
 			});
 			// Get current conditions
-			var conditions = CreateFactory.getConditions(singleGeo);
-			$scope.fish.conditions = conditions;
+			RiverFactory.getRiverConditions(river).then(function(results){
+				$scope.fish.conditions = results;
+			});
 		});
 
 		$scope.saveDraft = function(fish){
@@ -354,23 +370,19 @@
 
 	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', '$rootScope', function($scope, RiverFactory, MapFactory, $rootScope) {
 
-		RiverFactory.getRiverData().success(function(data){
-
+		RiverFactory.getRiverData().then(function(data){
 			$scope.river = data;
-			$scope.riverProps = data.features[0].properties;
 			var airTemperature;
-
-			RiverFactory.getNSGS().then(function(){
-				RiverFactory.getRiverConditions(data).then(function(results){
-					$scope.currentInfo = results;
-					$scope.waterFlow = results.discharge.values[0].value[0].value;
-					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
-					if(results.airTemp){
-						airTemperature = results.airTemp.values[0].value[0].value;
-					};
-				});
+			// Conditions
+			RiverFactory.getRiverConditions(data[1]).then(function(results){
+				$scope.currentInfo = results;
+				$scope.waterFlow = results.discharge.values[0].value[0].value;
+				$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+				if(results.airTemp){
+					airTemperature = results.airTemp.values[0].value[0].value;
+				};
 			});
-
+			// Weather
 			RiverFactory.getRiverWeather(data).success(function(weather){
 				if(!airTemperature){
 					airTemperature = weather.main.temp;
@@ -381,7 +393,6 @@
 
 		RiverFactory.getRiverCatches().success( function(data){
 			$scope.riverCatches = data.results;
-			console.log($scope.riverCatches);
 		});
 
 		$scope.tempFilter = function(fish) {
@@ -893,14 +904,14 @@
 			// });
 
 			// Get Rivers from rivers.js and populate map
-			$http.get(riverURL, P_HEADERS).success(function(data){
-				var rivers = data.results;
-				_.each(rivers, function(river){
-					var coordinates = river.features[0].geometry.coordinates;
-					var options = river.features[0].properties;
-					var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo($rootScope.map);
-				});
-			});
+			// $http.get(riverURL, P_HEADERS).success(function(data){
+			// 	var rivers = data.results;
+			// 	_.each(rivers, function(river){
+			// 		var coordinates = river.features[0].geometry.coordinates;
+			// 		var options = river.features[0].properties;
+			// 		var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo($rootScope.map);
+			// 	});
+			// });
 
 			// // zoom the map to the polyline
 			// map.fitBounds(riverLine.getBounds());
@@ -937,14 +948,13 @@
 
 		var startRiverMap = function(){
 			var params = $routeParams.id;
-			$http.get(riverURL + params, P_HEADERS).success(function(data){
-				var coordinates = data.features[0].geometry.coordinates;
-				var options = data.features[0].properties;
-				var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446');
-				var polyline = L.polyline(coordinates, options).addTo(map);
-				// zoom the map to the polyline
-				map.fitBounds(polyline.getBounds());
+			var data = _.pairs($rootScope.$storage.nsgs);
+			var singleRiver = _.find(data, function(x){
+				return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
 			});
+			var coords = singleRiver[1][0].sourceInfo.geoLocation.geogLocation;
+			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446').setView([coords.latitude, coords.longitude], 12);
+			var riverCoords = L.marker([coords.latitude, coords.longitude]).addTo(map);;
 		};
 
 
@@ -982,20 +992,8 @@
 
 		var publish = function(fish){
 			fish.status = "published";
-			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
-			.success( function(){
-				$http.put(riverURL + fish.river.objectId, {
-					"catches": {
-						"__op":"AddRelation",
-						"objects": [{
-							"__type": "Pointer",
-							"className": "catches",
-							"objectId": fish.objectId
-						}]
-					}
-				}, P_HEADERS).success(function(){
-					$location.path('/maps');
-				});
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS).success(function(){
+				$location.path('/maps');
 			});
 		};
 
@@ -1021,43 +1019,36 @@
 		var weatherKey = '&units=imperial&APPID=480997352b669d76eb0919fd6cf75263';
 
 		var getRiverData = function(){
-			return $http.get(riverURL + $routeParams.id, P_HEADERS);
+			return $q(function(resolve){
+				var data = _.pairs($rootScope.$storage.nsgs);
+				var singleRiver = _.find(data, function(x){
+					return x[1][0].sourceInfo.siteCode[0].value === $routeParams.id;
+				});
+				resolve(singleRiver);
+			});
 		};
 
 		var getRiverCatches = function(){
-			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}, "status": "published"}';
+			var params = '?include=user&where={"riverId": "' + $routeParams.id + '", "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
 		var getRiverWeather = function(river){
-			var coordsArray = river.features[0].geometry.coordinates;
-			var coords = coordsArray[Math.round(coordsArray.length/2)];
+			var coords = river[1][0].sourceInfo.geoLocation.geogLocation;
 			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
-		var getClosestRiver = function(data, geo){
-			var closestRiver;
-			var allRivers = data.results;
-			var allCoords = [];
-			_.each(allRivers, function(river){
-				allCoords.push(river.features[0].geometry.coordinates);
+		var getClosestRiver = function(geo){
+			var allRivers = $rootScope.nsgs;
+			return _.min(allRivers, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, geo[0], geo[1]);
 			});
-			var flattenedCoords = _.flatten(allCoords, 'shallow');
-			var getDist = [];
-			_.each(flattenedCoords, function(coordSet){
-				getDist.push($rootScope.haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
-			});
-			var minDist = _.min(getDist);
-			var closestRiver = _.findWhere(allRivers, function(river){
-				var theseCoords = river.features[0].geometry.coordinates;
-				$rootScope.haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
-			});
-			return closestRiver;
 		};
 
 		var getAllRivers = function(){
-			return $http.get(riverURL, P_HEADERS);
+			// return $http.get(riverURL, P_HEADERS);
 		};
 
 		var createRivers = function(river){
@@ -1074,19 +1065,10 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
+			console.log(singleRiver);
 			var info = {};
 			return $q(function(resolve){
-			var allCoords = singleRiver.features[0].geometry.coordinates;
-			var coords = allCoords[Math.round(allCoords.length/2)];
-			// Get the closest recorded conditions
-			var closest = _.min($rootScope.nsgs, function(river){
-				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
-				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
-			});
-
-			// Store closest info in object
-
-			_.each(closest, function(condition){
+			_.each(singleRiver, function(condition){
 				if(condition.variable.oid == 45807197){
 					info.discharge = condition;
 				}
@@ -1100,7 +1082,6 @@
 					info.airTemp = condition;
 				}
 			});
-
 			resolve(info);
 		});
 	};
@@ -1114,6 +1095,8 @@
 					});
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
+					console.log($rootScope.nsgs);
+					console.log(_.pairs($rootScope.nsgs));
 				});
 			})
 		};

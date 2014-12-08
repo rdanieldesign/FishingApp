@@ -3,9 +3,9 @@
 	<div class="riverSearch">
 		<input type="text" ng-model="search" placeholder="Search Rivers">
 		<ul id="searchResults" ng-show="search">
-			<a href="#/river/{{river.objectId}}" ng-repeat="river in rivers | filter:search">
+			<a href="#/river/{{river[1][0].sourceInfo.siteCode[0].value}}" ng-repeat="river in rivers | filter:search">
 				<li>
-					{{ river.features[0].properties.title }}
+					{{ river[0] }}
 				</li>
 			</a>
 		</ul>
