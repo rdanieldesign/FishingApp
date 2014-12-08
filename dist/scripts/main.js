@@ -1,6 +1,6 @@
 (function(){
 
-	angular.module('FishingApp', ['ngRoute', 'ngCookies'])
+	angular.module('FishingApp', ['ngRoute', 'ngCookies', 'angularMoment'])
 
 	.constant('P_HEADERS', {
 		headers: {
@@ -16,6 +16,7 @@
 	.constant('FILES', 'https://api.parse.com/1/files/')
 	.constant('CATCHES', 'https://api.parse.com/1/classes/catches/')
 	.constant('CURRENT_USER', 'https://api.parse.com/1/users/me/')
+	.constant('NSGS', 'http://waterservices.usgs.gov/nwis/iv/?format=json&indent=on&stateCd=ga&parameterCd=00065,00060,00020,00010&siteType=ST')
 
 	.config( function($routeProvider){
 
@@ -25,7 +26,7 @@
 		});
 
 		$routeProvider.when('/login', {
-			templateUrl: 'templates/user.html',
+			templateUrl: 'templates/login.html',
 			controller: 'User'
 		});
 
@@ -49,6 +50,16 @@
 			controller: 'Draft'
 		});
 
+		$routeProvider.when('/me/:id', {
+			templateUrl: 'templates/me.html',
+			controller: 'Me'
+		});
+
+		$routeProvider.when('/user/:id', {
+			templateUrl: 'templates/user.html',
+			controller: 'Single'
+		});
+
 		$routeProvider.otherwise({
 			templateUrl: 'templates/otherwise.html',
 			controller: 'Otherwise'
@@ -56,11 +67,24 @@
 
 	})
 
-	.run(['$rootScope', '$location', 'UserFactory', function ($rootScope, $location, UserFactory) {
+	.run(['$rootScope', '$location', 'UserFactory', 'RiverFactory', 'CreateFactory', function ($rootScope, $location, UserFactory, RiverFactory, CreateFactory) {
 		$rootScope.$on('$routeChangeStart', function() {
 			UserFactory.checkUser();
 		});
-	}]);
+		$rootScope.haversine = CreateFactory.haversine;
+		RiverFactory.getNSGS();
+	}])
+
+	.directive("loader", function ($rootScope) {
+		return function ($scope, element, attrs) {
+			$scope.$on("loader_show", function () {
+				return element.show();
+			});
+			return $scope.$on("loader_hide", function () {
+				return element.hide();
+			});
+		};
+	});
 
 }());
 (function(){
@@ -80,10 +104,28 @@
 
 	angular.module('FishingApp')
 
-	.controller('User', ['$scope', 'UserFactory', '$rootScope', function($scope, UserFactory, $rootScope){
+	.controller('User', ['$scope', 'UserFactory', '$rootScope', '$cookieStore', function($scope, UserFactory, $rootScope, $cookieStore){
+
+		var loggedIn = $cookieStore.get('currentUser');
+		if(loggedIn){
+			UserFactory.getCurrentUser(loggedIn).success(function(data){
+				$rootScope.currentUser = data;
+				$scope.user = $rootScope.currentUser;
+				$scope.signedIn = true;
+			});
+		}
+		else {
+			$scope.signedIn = false;
+		};
+
+		$scope.newUser = null;
 
 		$scope.registerUser = function(user){
-			UserFactory.registerUser(user);
+			UserFactory.registerUser(user).success( function(){
+				UserFactory.newUser(user);
+			}).error( function(){
+				alert('Please provide a username and password.');
+			});
 		};
 
 		$scope.loginUser = function(user){
@@ -91,14 +133,9 @@
 		};
 
 		$scope.logout = function(){
+			$scope.signedIn = false;
 			UserFactory.logout();
 		};
-
-		UserFactory.watchFileInput();
-
-		UserFactory.checkUser();
-
-		$scope.user = $rootScope.currentUser;
 
 	}]);
 
@@ -125,17 +162,147 @@
 
 	angular.module('FishingApp')
 
-	.controller('Profile', ['$scope', 'UserFactory', function($scope, UserFactory){
+	.controller('Profile', ['$scope', '$rootScope', 'UserFactory', 'MapFactory', '$location', function($scope, $rootScope, UserFactory, MapFactory, $location){
+
+		UserFactory.getThisUser().success( function(data){
+			MapFactory.userMap(data);
+			$scope.user = data;
+		});
 
 		UserFactory.loadUserPublished().success( function(data){
-			console.log(data);
 			$scope.myPublished = data.results;
 		});
 
 		UserFactory.loadUserDrafts().success( function(data){
-			console.log(data);
 			$scope.myDrafts = data.results;
 		});
+
+		// Map Filtering
+		$scope.$watch('filteredCatches', function() {
+			MapFactory.updateMap($scope.filteredCatches);
+		}, true);
+
+
+		// Edit draft
+		$scope.editDraft = function(draft){
+			var draftId = draft.objectId;
+			$location.path('/draft/' + draftId);
+		};
+
+		// Filters
+
+		$scope.tempFilter = function(fish) {
+			if(fish.weather && $scope.tempSwitch){
+				return Number(fish.weather.main.temp) >= $scope.airLow && Number(fish.weather.main.temp) <= $scope.airHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.levelFilter = function(fish) {
+			if(fish.conditions.gageHeight && $scope.levelSwitch){
+				return Number(fish.conditions.gageHeight.values[0].value[0].value) >= $scope.levelLow && Number(fish.conditions.gageHeight.values[0].value[0].value) <= $scope.levelHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.waterFilter = function(fish) {
+			if(fish.conditions.waterTemp && $scope.waterSwitch){
+				return Number(fish.conditions.waterTemp.values[0].value[0].value) >= $scope.waterLow && Number(fish.conditions.waterTemp.values[0].value[0].value) <= $scope.waterHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.flowFilter = function(fish) {
+			if(fish.conditions.discharge && $scope.flowSwitch){
+				return Number(fish.conditions.discharge.values[0].value[0].value) >= $scope.flowLow && Number(fish.conditions.discharge.values[0].value[0].value) <= $scope.flowHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		// Initiate Temp slider
+		$('#tempSlider').noUiSlider({
+			start: [20, 80],
+			connect: true,
+			margin: 10,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#tempSlider_high'))
+		.Link('lower').to($('#tempSlider_low'))
+		.on('slide', function(){
+			$scope.airLow = $('#tempSlider').val()[0];
+			$scope.airHigh = $('#tempSlider').val()[1];
+			$scope.$apply();
+		});
+
+		// Initiate Level slider
+		$('#levelSlider').noUiSlider({
+			start: [0, 100],
+			connect: true,
+			margin: 1,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#levelSlider_high'))
+		.Link('lower').to($('#levelSlider_low'))
+		.on('slide', function(){
+			$scope.levelLow = $('#levelSlider').val()[0];
+			$scope.levelHigh = $('#levelSlider').val()[1];
+			$scope.$apply();
+		});
+
+		// Initiate Water Temp slider
+		$('#waterSlider').noUiSlider({
+			start: [0, 100],
+			connect: true,
+			margin: 5,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#waterSlider_high'))
+		.Link('lower').to($('#waterSlider_low'))
+		.on('slide', function(){
+			$scope.waterLow = $('#waterSlider').val()[0];
+			$scope.waterHigh = $('#waterSlider').val()[1];
+			$scope.$apply();
+		});
+
+		// Initiate Flow slider
+		$('#flowSlider').noUiSlider({
+			start: [0, 1000],
+			connect: true,
+			margin: 5,
+			range: {
+				'min': 0,
+				'max': 1000
+			}
+		})
+		.Link('upper').to($('#flowSlider_high'))
+		.Link('lower').to($('#flowSlider_low'))
+		.on('slide', function(){
+			$scope.flowLow = $('#flowSlider').val()[0];
+			$scope.flowHigh = $('#flowSlider').val()[1];
+			$scope.$apply();
+		});
+
+		$scope.airLow = 20;
+		$scope.airHigh = 80;
+		$scope.levelLow = 0;
+		$scope.levelHigh = 100;
+		$scope.waterLow = 0;
+		$scope.waterHigh = 100;
+		$scope.flowLow = 0;
+		$scope.flowHigh = 1000;
 
 
 	}])
@@ -165,6 +332,9 @@
 				var weather = data;
 				$scope.fish.weather = weather;
 			});
+			// Get current conditions
+			var conditions = CreateFactory.getConditions(singleGeo);
+			$scope.fish.conditions = conditions;
 		});
 
 		$scope.saveDraft = function(fish){
@@ -182,43 +352,150 @@
 
 	angular.module('FishingApp')
 
-	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', function($scope, RiverFactory, MapFactory) {
+	.controller('River', ['$scope', 'RiverFactory', 'MapFactory', '$rootScope', function($scope, RiverFactory, MapFactory, $rootScope) {
 
 		RiverFactory.getRiverData().success(function(data){
-			RiverFactory.getRiverWeather(data).success(function(weather){
-				var currentTemp = weather.main.temp;
-				$scope.currentTemp = currentTemp;
-			});
-			RiverFactory.getRiverCatches().success( function(data){
-				$scope.riverCatches = data.results;
-			});
+
 			$scope.river = data;
 			$scope.riverProps = data.features[0].properties;
-			// Initiate slider
-			$('#tempSlider').noUiSlider({
-				start: [20, 80],
-				connect: true,
-				margin: 10,
-				range: {
-					'min': 0,
-					'max': 100
-				}
+			var airTemperature;
+
+			RiverFactory.getNSGS().then(function(){
+				RiverFactory.getRiverConditions(data).then(function(results){
+					$scope.currentInfo = results;
+					$scope.waterFlow = results.discharge.values[0].value[0].value;
+					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+					if(results.airTemp){
+						airTemperature = results.airTemp.values[0].value[0].value;
+					};
+				});
 			});
-			$('#tempSlider').Link('upper').to($('#tempSlider_high'));
-			$('#tempSlider').Link('lower').to($('#tempSlider_low'));
-			$scope.low = 20;
-			$scope.high = 80;
+
+			RiverFactory.getRiverWeather(data).success(function(weather){
+				if(!airTemperature){
+					airTemperature = weather.main.temp;
+					$scope.currentTemp = airTemperature;
+				};
+			});
 		});
 
-		$('#tempSlider').on('slide', function(){
-			$scope.low = $('#tempSlider').val()[0];
-			$scope.high = $('#tempSlider').val()[1];
+		RiverFactory.getRiverCatches().success( function(data){
+			$scope.riverCatches = data.results;
+			console.log($scope.riverCatches);
+		});
+
+		$scope.tempFilter = function(fish) {
+			if(fish.weather && $scope.tempSwitch){
+				return Number(fish.weather.main.temp) >= $scope.airLow && Number(fish.weather.main.temp) <= $scope.airHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.levelFilter = function(fish) {
+			if(fish.conditions.gageHeight && $scope.levelSwitch){
+				return Number(fish.conditions.gageHeight.values[0].value[0].value) >= $scope.levelLow && Number(fish.conditions.gageHeight.values[0].value[0].value) <= $scope.levelHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.waterFilter = function(fish) {
+			if(fish.conditions.waterTemp && $scope.waterSwitch){
+				return Number(fish.conditions.waterTemp.values[0].value[0].value) >= $scope.waterLow && Number(fish.conditions.waterTemp.values[0].value[0].value) <= $scope.waterHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		$scope.flowFilter = function(fish) {
+			if(fish.conditions.discharge && $scope.flowSwitch){
+				return Number(fish.conditions.discharge.values[0].value[0].value) >= $scope.flowLow && Number(fish.conditions.discharge.values[0].value[0].value) <= $scope.flowHigh;
+			} else {
+				return fish;
+			}
+		};
+
+		// Initiate Temp slider
+		$('#tempSlider').noUiSlider({
+			start: [20, 80],
+			connect: true,
+			margin: 10,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#tempSlider_high'))
+		.Link('lower').to($('#tempSlider_low'))
+		.on('slide', function(){
+			$scope.airLow = $('#tempSlider').val()[0];
+			$scope.airHigh = $('#tempSlider').val()[1];
 			$scope.$apply();
 		});
 
-		$scope.tempFilter = function (fish) {
-			return fish.weather.main.temp >= $scope.low && fish.weather.main.temp <= $scope.high;
-		};
+		// Initiate Level slider
+		$('#levelSlider').noUiSlider({
+			start: [0, 100],
+			connect: true,
+			margin: 1,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#levelSlider_high'))
+		.Link('lower').to($('#levelSlider_low'))
+		.on('slide', function(){
+			$scope.levelLow = $('#levelSlider').val()[0];
+			$scope.levelHigh = $('#levelSlider').val()[1];
+			$scope.$apply();
+		});
+
+		// Initiate Water Temp slider
+		$('#waterSlider').noUiSlider({
+			start: [0, 100],
+			connect: true,
+			margin: 5,
+			range: {
+				'min': 0,
+				'max': 100
+			}
+		})
+		.Link('upper').to($('#waterSlider_high'))
+		.Link('lower').to($('#waterSlider_low'))
+		.on('slide', function(){
+			$scope.waterLow = $('#waterSlider').val()[0];
+			$scope.waterHigh = $('#waterSlider').val()[1];
+			$scope.$apply();
+		});
+
+		// Initiate Flow slider
+		$('#flowSlider').noUiSlider({
+			start: [0, 1000],
+			connect: true,
+			margin: 5,
+			range: {
+				'min': 0,
+				'max': 1000
+			}
+		})
+		.Link('upper').to($('#flowSlider_high'))
+		.Link('lower').to($('#flowSlider_low'))
+		.on('slide', function(){
+			$scope.flowLow = $('#flowSlider').val()[0];
+			$scope.flowHigh = $('#flowSlider').val()[1];
+			$scope.$apply();
+		});
+
+		$scope.airLow = 20;
+		$scope.airHigh = 80;
+		$scope.levelLow = 0;
+		$scope.levelHigh = 100;
+		$scope.waterLow = 0;
+		$scope.waterHigh = 100;
+		$scope.flowLow = 0;
+		$scope.flowHigh = 1000;
 
 		MapFactory.startRiverMap();
 
@@ -229,7 +506,35 @@
 
 	angular.module('FishingApp')
 
-	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', '$location', function($http, P_HEADERS, $cookieStore, $rootScope, $location){
+	.controller('Me', ['$scope', 'UserFactory', function($scope, UserFactory){
+
+		$scope.updateUser = function(user){
+			UserFactory.updateUser(user);
+		};
+
+		UserFactory.watchFileInput();
+
+	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.controller('Single', ['$scope', 'UserFactory', function($scope, UserFactory){
+
+		UserFactory.getSingleCatches().success(function(data){
+			$scope.allCatches = data.results;
+		});
+
+	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.factory('UserFactory', ['$http', 'P_HEADERS', '$cookieStore', '$rootScope', '$location', '$routeParams', function($http, P_HEADERS, $cookieStore, $rootScope, $location, $routeParams){
 
 		var userURL = 'https://api.parse.com/1/users/';
 		var loginURL = 'https://api.parse.com/1/login/?';
@@ -245,16 +550,23 @@
 				var files = e.target.files || e.dataTransfer.files;
 				// Our file var now holds the selected file
 				currentFile = files[0];
-				console.log(currentFile);
 			});
 		};
 
 		var registerUser =  function(user){
-			console.log(user);
+			return $http.post(userURL, {
+				'username': user.username,
+				'password': user.password
+				// 'avatar': data.url,
+				// 'name': user.name
+			}, P_HEADERS);
+		};
 
-			// Upload avatar to Parse
+		var updateUser = function(user){
 			var currentFileURL = filesURL + currentFile.name;
-			$http.post(currentFileURL, currentFile, {
+			// Set catches' user
+			var currentUser = $cookieStore.get('currentUser');
+			return $http.post(currentFileURL, currentFile, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
 					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
@@ -264,34 +576,43 @@
 			{
 				processData: false,
 				contentType: false,
-			}).success(function(data){
-				console.log('Image Uploaded Successfully');
-				console.log(data);
-				console.log(user);
-				$http.post(userURL, {
-					'username': user.username,
-					'password': user.password,
-					'avatar': data.url,
-					'name': user.name
-				}, P_HEADERS).success( function(){
-					console.log(user);
-					loginUser(user);
-				}).error( function(){
-					alert('Please provide a username and password.');
+			}).
+			success(function(data){
+				// Set Catch Image
+				var picURL = data.url;
+				$http.put(userURL + currentUser.objectId, {
+					"avatar": picURL,
+					"name": user.name
+				}, {
+					headers: {
+					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+					'X-Parse-Session-Token': currentUser.sessionToken,
+					'Content-Type': 'application/json'
+					}
+				}).success(function(){
+					$location.path('/');
 				});
-			}).error(function(){
-					console.log('Image Upload Failed');
+			});
+		};
+
+		var newUser = function(user){
+			var params = 'username='+user.username+'&password='+user.password;
+			return $http.get(loginURL + params, P_HEADERS)
+			.success( function(user){
+				$cookieStore.remove('currentUser');
+				$cookieStore.put('currentUser', user);
+				$location.path('/me/' + user.objectId);
 			});
 		};
 
 		var loginUser = function(user){
 			var params = 'username='+user.username+'&password='+user.password;
-			return $http.get(loginURL + params, P_HEADERS)
+			$http.get(loginURL + params, P_HEADERS)
 			.success( function(user){
-				$('#loginForm')[0].reset();
-				console.log(user.username + ' is logged in.');
 				$cookieStore.remove('currentUser');
 				$cookieStore.put('currentUser', user);
+				$location.path('/');
 			}).error( function(){
 				alert('Incorrect credentials.');
 			});
@@ -302,6 +623,8 @@
 			return checkUser();
 		};
 
+
+
 		var checkUser = function (user) {
 			$rootScope.currentUser =  $cookieStore.get('currentUser');
 			if($rootScope.currentUser === undefined){
@@ -309,10 +632,21 @@
 			}
 		};
 
-		// Load the current user's posts
-		var loadUserPublished = function(user){
+		var getCurrentUser = function(user){
+			var params = user.objectId;
+			return $http.get(userURL + params, P_HEADERS);
+		};
+
+		var getThisUser = function(){
 			var user = $cookieStore.get('currentUser');
-			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
+			var params = user.objectId
+			return $http.get(userURL + params, P_HEADERS);
+		};
+
+		// Load the current user's posts
+		var loadUserPublished = function(){
+			var user = $cookieStore.get('currentUser');
+			var params = '?include=river&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -324,7 +658,12 @@
 		// Load the current user's posts
 		var loadUserDrafts = function(user){
 			var user = $cookieStore.get('currentUser');
-			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"draft"}';
+			var params = '?include=river&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}, "status":"draft"}';
+			return $http.get(catchURL + params, P_HEADERS);
+		};
+
+		var getSingleCatches = function(){
+			var params = '?include=user&where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ $routeParams.id +'"}, "status":"published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -335,7 +674,12 @@
 			checkUser: checkUser,
 			loadUserPublished: loadUserPublished,
 			loadUserDrafts: loadUserDrafts,
-			watchFileInput: watchFileInput
+			watchFileInput: watchFileInput,
+			newUser: newUser,
+			updateUser: updateUser,
+			getCurrentUser: getCurrentUser,
+			getSingleCatches: getSingleCatches,
+			getThisUser: getThisUser
 		}
 
 	}]);
@@ -356,6 +700,7 @@
 			// Our file var now holds the selected file
 			$rootScope.file = files[0];
 			// HTML5 Geolocation
+			$rootScope.$broadcast("loader_show");
 			getGeo();
 		});
 
@@ -370,6 +715,7 @@
 						"longitude": longitude,
 					};
 					alert('Got geolocation!');
+					$rootScope.$broadcast("loader_hide");
 					postPic();
 				};
 				navigator.geolocation.getCurrentPosition(show_map);
@@ -407,17 +753,46 @@
 		// 	});
 		// };
 
+		// With Weather API
 		var getWeather = function(singleGeo){
 			var coords = '?lat='+ singleGeo[0] +'&lon='+ singleGeo[1];
 			return $http.get(WEATHER + coords + WEATHER_KEY);
 		};
+
+		// With NSGS
+		var getConditions = function(singleGeo){
+			// Get the closest recorded conditions
+			var closest = _.min($rootScope.nsgs, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, singleGeo[0], singleGeo[1]);
+			});
+			// Store closest info in object
+			var info = {};
+			_.each(closest, function(condition){
+				if(condition.variable.oid == 45807197){
+					info.discharge = condition;
+				}
+				else if(condition.variable.oid == 45807202){
+					info.gageHeight = condition;
+				}
+				else if(condition.variable.oid == 45807042){
+					info.waterTemp = condition;
+				}
+				else if(condition.variable.oid == 45807073){
+					info.airTemp = condition;
+				}
+			});
+			return info;
+		};
+
+
 
 		// Post picture and go to drafts
 		var postPic = function(){
 			var currentFileURL = FILES + $rootScope.file.name;
 			// Set catches' user
 			var currentUser = $cookieStore.get('currentUser');
-			return $http.post(currentFileURL, $rootScope.file, {
+			$http.post(currentFileURL, $rootScope.file, {
 				headers: {
 					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
 					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
@@ -437,7 +812,6 @@
 				$http.post(CATCHES, {
 					"picURL": picURL,
 					"geoData": geoData,
-					// "weather": weather,
 					"user": {
 						"__type": "Pointer",
 						"className": "_User",
@@ -446,6 +820,7 @@
 					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
+					console.log(data);
 					var draftId = data.objectId;
 					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);
@@ -460,14 +835,34 @@
 
 		// Get all published catches
 		var getPublished = function(){
-			var params = '?where={"status":"published"}';
+			var params = '?include=user&where={"status":"published"}';
 			return $http.get(CATCHES + params, P_HEADERS);
+		};
+
+		// Haversine Formula
+		var haversine = function( lat1, lon1, lat2, lon2 ){
+			// Convert Degress to Radians
+			function Deg2Rad( deg ) {
+				return deg * Math.PI / 180;
+			}
+			var R = 6372.8; // Earth Radius in Kilometers
+			var dLat = Deg2Rad(lat2-lat1);
+			var dLon = Deg2Rad(lon2-lon1);
+			var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
+			Math.sin(dLon/2) * Math.sin(dLon/2);
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+			var d = R * c;
+			// Return Distance in Kilometers
+			return d;
 		};
 
 		return {
 			getCatches: getCatches,
 			getPublished: getPublished,
-			getWeather: getWeather
+			getWeather: getWeather,
+			getConditions: getConditions,
+			haversine: haversine
 		}
 
 	}]);
@@ -477,7 +872,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('MapFactory', ['$http', 'P_HEADERS', '$routeParams', function($http, P_HEADERS, $routeParams){
+	.factory('MapFactory', ['$http', '$rootScope', 'P_HEADERS', '$routeParams', function($http, $rootScope, P_HEADERS, $routeParams){
 
 		var catchURL = 'https://api.parse.com/1/classes/catches/';
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -487,15 +882,15 @@
 
 		var startMap = function(){
 
-			var map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
+			$rootScope.map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
 			.setView([39.656, -97.295], 5);
-			
-			// Query Catches and drop marker for each
-			$http.get(catchURL, P_HEADERS).success(function(data){
-				_.each(data.results, function(x){
-					L.marker([x.geoData.latitude, x.geoData.longitude]).addTo(map);
-				});
-			});
+
+			// // Query Catches and drop marker for each
+			// $http.get(catchURL, P_HEADERS).success(function(data){
+			// 	_.each(data.results, function(x){
+			// 		L.marker([x.geoData.latitude, x.geoData.longitude]).addTo($rootScope.map);
+			// 	});
+			// });
 
 			// Get Rivers from rivers.js and populate map
 			$http.get(riverURL, P_HEADERS).success(function(data){
@@ -503,13 +898,41 @@
 				_.each(rivers, function(river){
 					var coordinates = river.features[0].geometry.coordinates;
 					var options = river.features[0].properties;
-					var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo(map);
+					var riverLine = L.polyline(coordinates, options).bindPopup('<a href="#/river/' + river.objectId + '">' + options.title + '</a>').addTo($rootScope.map);
 				});
 			});
 
 			// // zoom the map to the polyline
 			// map.fitBounds(riverLine.getBounds());
 
+		};
+
+		var userMap = function(user){
+			$rootScope.map = L.mapbox.map('map', 'rdanieldesign.kb2o8446')
+			.setView([32.986, -82.782], 7);
+			var markers = [];
+			// Query Catches and drop marker for each
+			var params = '?where={"user":{"__type":"Pointer","className":"_User","objectId":"'+ user.objectId +'"}}';
+			$http.get(catchURL + params, P_HEADERS).success(function(data){
+				_.each(data.results, function(x){
+					markers.push(L.marker([x.geoData.latitude, x.geoData.longitude]).bindPopup('<img src="' + x.picURL + '" style="width: 120px;">'));
+				});
+				$rootScope.group = L.layerGroup(markers);
+				$rootScope.group.addTo($rootScope.map);
+			});
+		};
+
+		var updateMap = function(catches){
+			if($rootScope.map && $rootScope.group){
+				var map = $rootScope.map;
+				map.removeLayer($rootScope.group);
+				var markers = [];
+				_.each(catches, function(x){
+					markers.push(L.marker([x.geoData.latitude, x.geoData.longitude]).bindPopup('<img src="' + x.picURL + '" style="width: 120px;">'));
+				});
+				$rootScope.group = L.layerGroup(markers);
+				$rootScope.group.addTo(map);
+			};
 		};
 
 		var startRiverMap = function(){
@@ -527,7 +950,9 @@
 
 		return {
 			startMap: startMap,
-			startRiverMap: startRiverMap
+			startRiverMap: startRiverMap,
+			userMap: userMap,
+			updateMap: updateMap
 		}
 
 	}]);
@@ -549,7 +974,7 @@
 		};
 
 		var saveDraft = function(fish){
-			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
 			.success( function(){
 				$location.path('/profile');
 			});
@@ -557,7 +982,7 @@
 
 		var publish = function(fish){
 			fish.status = "published";
-			return $http.put(catchURL + singleId, fish, P_HEADERS)
+			$http.put(catchURL + $routeParams.fish, fish, P_HEADERS)
 			.success( function(){
 				$http.put(riverURL + fish.river.objectId, {
 					"catches": {
@@ -587,7 +1012,7 @@
 
 	angular.module('FishingApp')
 
-	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', function($http, $routeParams, P_HEADERS){
+	.factory('RiverFactory', ['$http', '$routeParams', 'P_HEADERS', 'NSGS', '$rootScope', '$q', function($http, $routeParams, P_HEADERS, NSGS, $rootScope, $q){
 
 		var riverID = $routeParams.id;
 		var riverURL = 'https://api.parse.com/1/classes/rivers/';
@@ -600,7 +1025,7 @@
 		};
 
 		var getRiverCatches = function(){
-			var params = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ riverID +'"},"key":"catches"}}';
+			var params = '?include=user&where={"$relatedTo":{"object":{"__type":"Pointer","className":"rivers","objectId":"'+ $routeParams.id +'"},"key":"catches"}, "status": "published"}';
 			return $http.get(catchURL + params, P_HEADERS);
 		};
 
@@ -619,32 +1044,14 @@
 				allCoords.push(river.features[0].geometry.coordinates);
 			});
 			var flattenedCoords = _.flatten(allCoords, 'shallow');
-			// Haversine Formula
-			var Haversine = function( lat1, lon1, lat2, lon2 ){
-				// Convert Degress to Radians
-				function Deg2Rad( deg ) {
-					return deg * Math.PI / 180;
-				}
-				var R = 6372.8; // Earth Radius in Kilometers
-				var dLat = Deg2Rad(lat2-lat1);
-				var dLon = Deg2Rad(lon2-lon1);
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(Deg2Rad(lat1)) * Math.cos(Deg2Rad(lat2)) *
-				Math.sin(dLon/2) * Math.sin(dLon/2);
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-				var d = R * c;
-				// Return Distance in Kilometers
-				return d;
-			};
-
 			var getDist = [];
 			_.each(flattenedCoords, function(coordSet){
-				getDist.push(Haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
+				getDist.push($rootScope.haversine(coordSet[0], coordSet[1], geo[0], geo[1]));
 			});
 			var minDist = _.min(getDist);
 			var closestRiver = _.findWhere(allRivers, function(river){
 				var theseCoords = river.features[0].geometry.coordinates;
-				Haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
+				$rootScope.haversine(theseCoords[0], theseCoords[1], geo[0], geo[1]) === minDist;
 			});
 			return closestRiver;
 		};
@@ -666,16 +1073,108 @@
 			});
 		};
 
+		var getRiverConditions = function(singleRiver){
+			var info = {};
+			return $q(function(resolve){
+			var allCoords = singleRiver.features[0].geometry.coordinates;
+			var coords = allCoords[Math.round(allCoords.length/2)];
+			// Get the closest recorded conditions
+			var closest = _.min($rootScope.nsgs, function(river){
+				var riverGeo = river[0].sourceInfo.geoLocation.geogLocation;
+				return $rootScope.haversine(riverGeo.latitude, riverGeo.longitude, coords[0], coords[1]);
+			});
+
+			// Store closest info in object
+
+			_.each(closest, function(condition){
+				if(condition.variable.oid == 45807197){
+					info.discharge = condition;
+				}
+				else if(condition.variable.oid == 45807202){
+					info.gageHeight = condition;
+				}
+				else if(condition.variable.oid == 45807042){
+					info.waterTemp = condition;
+				}
+				else if(condition.variable.oid == 45807073){
+					info.airTemp = condition;
+				}
+			});
+
+			resolve(info);
+		});
+	};
+
+		var getNSGS = function(){
+			return $q(function(resolve){
+				$http.get(NSGS).success(function(data){
+					var array = data.value.timeSeries;
+					var grouped = _.groupBy(array, function(x){
+						return x.sourceInfo.siteName;
+					});
+					$rootScope.nsgs = grouped;
+					resolve($rootScope.nsgs);
+				});
+			})
+		};
+
 		return {
 			getRiverData: getRiverData,
 			getRiverCatches: getRiverCatches,
 			getRiverWeather: getRiverWeather,
 			getClosestRiver: getClosestRiver,
 			getAllRivers: getAllRivers,
-			createRivers: createRivers
+			createRivers: createRivers,
+			getRiverConditions: getRiverConditions,
+			getNSGS: getNSGS
 		};
 
 	}]);
+
+}());
+(function(){
+
+	angular.module('FishingApp')
+
+	.factory('httpInterceptor', function ($q, $rootScope, $log) {
+
+		var numLoadings = 0;
+
+		return {
+			request: function (config) {
+
+				numLoadings++;
+
+				// Show loader
+				$rootScope.$broadcast("loader_show");
+				return config || $q.when(config)
+
+			},
+			response: function (response) {
+
+				if ((--numLoadings) === 0) {
+					// Hide loader
+					$rootScope.$broadcast("loader_hide");
+				}
+
+				return response || $q.when(response);
+
+			},
+			responseError: function (response) {
+
+				if (!(--numLoadings)) {
+					// Hide loader
+					$rootScope.$broadcast("loader_hide");
+				}
+
+				return $q.reject(response);
+			}
+		};
+	})
+
+	.config(function ($httpProvider) {
+		$httpProvider.interceptors.push('httpInterceptor');
+	});
 
 }());
 var rivers = [
