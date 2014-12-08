@@ -6,7 +6,6 @@
 
 		RiverFactory.getRiverData().then(function(data){
 			$scope.river = data;
-			console.log($scope.river);
 			var airTemperature;
 			// Conditions
 			RiverFactory.getRiverConditions(data[1]).then(function(results){
@@ -28,7 +27,6 @@
 
 		RiverFactory.getRiverCatches().success( function(data){
 			$scope.riverCatches = data.results;
-			console.log($scope.riverCatches);
 		});
 
 		$scope.tempFilter = function(fish) {

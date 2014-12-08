@@ -13,6 +13,7 @@
 			var river = RiverFactory.getClosestRiver(singleGeo);
 			$scope.fish.details = river;
 			$scope.fish.riverId = river[0].sourceInfo.siteCode[0].value;
+			$scope.fish.riverName = river[0].sourceInfo.siteName;
 			//Get weather
 			CreateFactory.getWeather(singleGeo).success(function(data){
 				var weather = data;

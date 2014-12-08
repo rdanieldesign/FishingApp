@@ -462,6 +462,8 @@ h5.draftsHeader {
   input {
     @include span-columns(1 of 12);
     height: 30px;
+    display: inline-block;
+    text-align: center;
   }
 
   .tempFilter, .waterFilter, .levelFilter, .flowFilter {
@@ -475,6 +477,23 @@ h5.draftsHeader {
         display: block;
         width: 100%;
       }
+    }
+  }
+
+  .riverNameFilter {
+    @include span-columns(12 of 12);
+    padding-left: 0;
+    position: relative;
+
+    #searchResults {
+      position: absolute;
+      top: 80px;
+    }
+
+    input {
+      width: inherit;
+      height: 50px;
+      color: $lgrey;
     }
   }
 

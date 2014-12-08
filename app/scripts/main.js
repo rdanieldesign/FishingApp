@@ -74,6 +74,7 @@
 		$rootScope.$storage = $localStorage;
 		$rootScope.haversine = CreateFactory.haversine;
 		RiverFactory.getNSGS().then(function(data){
+			$localStorage.$reset();
 			$rootScope.$storage.nsgs = data;
 		});
 	}])
