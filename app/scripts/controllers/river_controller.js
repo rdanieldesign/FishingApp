@@ -9,7 +9,7 @@
 			console.log($scope.river);
 			var airTemperature;
 			// Conditions
-			RiverFactory.getRiverConditions(data).then(function(results){
+			RiverFactory.getRiverConditions(data[1]).then(function(results){
 				$scope.currentInfo = results;
 				$scope.waterFlow = results.discharge.values[0].value[0].value;
 				$scope.waterLevel = results.gageHeight.values[0].value[0].value;

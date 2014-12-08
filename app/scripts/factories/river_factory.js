@@ -57,9 +57,10 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
+			console.log(singleRiver);
 			var info = {};
 			return $q(function(resolve){
-			_.each(singleRiver[1], function(condition){
+			_.each(singleRiver, function(condition){
 				if(condition.variable.oid == 45807197){
 					info.discharge = condition;
 				}
