@@ -88,6 +88,23 @@
 				return element.hide();
 			});
 		};
+	})
+
+	.directive("scroll", function ($window) {
+		return function($scope, element, attrs) {
+			var lastScrollTop = 0;
+			$(window).scroll(function(event){
+				if($(this).scrollTop() > 100){
+					var st = $(this).scrollTop();
+					if (st > lastScrollTop){
+						$('nav').addClass('reducedNav');
+					} else if(st < lastScrollTop - 10){
+						$('nav').removeClass('reducedNav');
+					}
+					lastScrollTop = st;
+				};
+			});
+		};
 	});
 
 }());
@@ -165,7 +182,7 @@
 
 	angular.module('FishingApp')
 
-	.controller('Profile', ['$scope', '$rootScope', 'UserFactory', 'MapFactory', '$location', function($scope, $rootScope, UserFactory, MapFactory, $location){
+	.controller('Profile', ['$scope', '$rootScope', 'UserFactory', 'MapFactory', '$location', '$q', function($scope, $rootScope, UserFactory, MapFactory, $location, $q){
 
 		UserFactory.getThisUser().success( function(data){
 			MapFactory.userMap(data);
@@ -192,21 +209,18 @@
 			$location.path('/draft/' + draftId);
 		};
 
-		// Filters
-		$scope.riverFilter = function(fish) {
-			if(fish.riverName && $scope.riverSwitch){
-				return fish.riverName;
-			} else {
-				return fish;
-			}
-		};
 
 		$scope.setRiver = function(river){
-			if($scope.riverSwitch){
-				$scope.riverFilter =  river;
-			} else {
-				return;
-			}
+		  return $q(function(resolve){
+				if($scope.riverSwitch){
+					$scope.riverSearch.riverName = river;
+					resolve($scope.riverSearch.riverName);
+				} else {
+					return;
+				};
+			}).then(function(){
+				$scope.searching = false;
+			});
 		};
 
 		$scope.tempFilter = function(fish) {
