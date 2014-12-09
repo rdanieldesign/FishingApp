@@ -27,7 +27,7 @@
 
 		var getRiverWeather = function(river){
 			var coords = river[1][0].sourceInfo.geoLocation.geogLocation;
-			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
+			var params = '?lat='+ coords.latitude +'&lon='+ coords.longitude;
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
@@ -57,7 +57,6 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
-			console.log(singleRiver);
 			var info = {};
 			return $q(function(resolve){
 			_.each(singleRiver, function(condition){
@@ -87,8 +86,6 @@
 					});
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
-					console.log($rootScope.nsgs);
-					console.log(_.pairs($rootScope.nsgs));
 				});
 			})
 		};
