@@ -9,9 +9,15 @@
 			// Conditions
 			RiverFactory.getRiverConditions(data[1]).then(function(results){
 				$scope.currentInfo = results;
-				$scope.waterFlow = results.discharge.values[0].value[0].value;
-				$scope.waterLevel = results.gageHeight.values[0].value[0].value;
-				$scope.waterTemp = results.waterTemp.values[0].value[0].value;
+				if(results.discharge){
+					$scope.waterFlow = results.discharge.values[0].value[0].value;
+				};
+				if(results.gageHeight){
+					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+				};
+				if(results.waterTemp){
+					$scope.waterTemp = (((Number(results.waterTemp.values[0].value[0].value))*9)/5)+32;
+				};
 				if(results.airTemp){
 					$scope.currentTemp = results.airTemp.values[0].value[0].value;
 				};
@@ -20,7 +26,6 @@
 			if(!$scope.currentTemp){
 				RiverFactory.getRiverWeather(data).success(function(weather){
 					$scope.currentTemp = weather.main.temp;
-					console.log($scope.currentTemp);
 				});
 			};
 		});

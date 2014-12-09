@@ -698,6 +698,10 @@ h5.draftsHeader {
     @include omega();
   }
 
+  .profileMap {
+    @include span-columns(12);
+  }
+
   .riverTitle {
     @include span-columns(4);
   }
