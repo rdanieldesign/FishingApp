@@ -98,8 +98,10 @@
 					var st = $(this).scrollTop();
 					if (st > lastScrollTop){
 						$('nav').addClass('reducedNav');
+						$('.main').addClass('reducedMain');
 					} else if(st < lastScrollTop - 5){
 						$('nav').removeClass('reducedNav');
+						$('.main').removeClass('reducedMain');
 					}
 					lastScrollTop = st;
 				};
