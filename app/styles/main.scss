@@ -462,10 +462,6 @@ h5.draftsHeader {
   @include span-columns(12);
 }
 
-.riverConditions {
-  @include span-columns(12);
-}
-
 // Filters
 
 .riverfilters {
@@ -591,6 +587,34 @@ h5.draftsHeader {
     @include omega(2n);
   }
 
+  nav {
+
+    #logo {
+      @include span-columns(3);
+
+      div {
+        margin: 24px auto;
+        float: left;
+      }
+    }
+
+    .textlinks {
+      @include span-columns(9);
+      @include omega();
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .textlinks a {
+      @include span-columns(3 of 9);
+    }
+
+    .fakeButton {
+      @include span-columns(9);
+      @include omega();
+    }
+  }
+
 }
 
 @media (min-width: 600px){
@@ -601,6 +625,64 @@ h5.draftsHeader {
     @include omega(3n);
   }
 
+  nav {
+
+    #logo {
+      width: 90px;
+      margin: 0;
+
+      div {
+        float: left;
+        margin: 0;
+      }
+    }
+
+    .textlinks {
+      width: 320px;
+      margin: 7px 14px 0 0;
+    }
+
+    .textlinks a {
+      width: 90px;
+      padding: 3px 0;
+      margin-right: 12px;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+      height: 50px;
+
+      #imageFile {
+        height: 50px;
+      }
+
+      span {
+        top: 12px;
+      }
+    }
+  }
+
+  .reducedNav {
+
+    #logo {
+      width: 90px;
+      margin: 0;
+    }
+
+    .textlinks {
+      display: block;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+
+      #imageFile {
+        height: 50px;
+      }
+    }
+  }
 }
 
 @media (min-width: 800px){
@@ -612,17 +694,12 @@ h5.draftsHeader {
   }
 
   .riverMap {
-    @include span-columns(4);
+    @include span-columns(8);
+    @include omega();
   }
 
   .riverTitle {
     @include span-columns(4);
   }
-
-  .riverConditions {
-    @include span-columns(4);
-    @include omega();
-  }
-
 }
 

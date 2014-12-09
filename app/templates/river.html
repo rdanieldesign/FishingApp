@@ -1,17 +1,13 @@
 <div class="container">
 	<div class="riverTitle">
 		<h5>{{ river[0] }}</h5>
-		<p>{{ riverProps.description }}</p>
-	</div>
-	<div class="riverMap">
-		<div id='map'></div>
-	</div>
-	<div class="riverConditions">
-		<h5>Current Conditions</h5>
 		<p ng-if="currentTemp">Temperature: {{ currentTemp }}&deg;F</p>
 		<p ng-if="waterFlow">Water Flow: {{ waterFlow }}ft&sup3;/sec</p>
 		<p ng-if="waterLevel">Water Level: {{ waterLevel }}ft</p>
 		<p ng-if="waterTemp">Water Level: {{ waterTemp }}&deg;C</p>
+	</div>
+	<div class="riverMap">
+		<div id='map'></div>
 	</div>
 </div>
 <!-- Filters -->
