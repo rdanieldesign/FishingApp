@@ -98,7 +98,7 @@
 					var st = $(this).scrollTop();
 					if (st > lastScrollTop){
 						$('nav').addClass('reducedNav');
-					} else {
+					} else if(st < lastScrollTop - 10){
 						$('nav').removeClass('reducedNav');
 					}
 					lastScrollTop = st;
