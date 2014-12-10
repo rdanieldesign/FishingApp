@@ -423,7 +423,6 @@ h5.draftsHeader {
 
 .riverSearch {
   @include span-columns(12);
-  padding-top: 22px;
   padding-left: 40px;
 
   input {
@@ -466,8 +465,28 @@ h5.draftsHeader {
 
 .riverfilters {
   @include span-columns(12);
-  background-color: $yellow;
+  background-color: $bggrey;
+  color: $lgrey;
   padding: 20px;
+
+  .container {
+    padding: 0;
+  }
+
+  .openFilter {
+    overflow: auto;
+    padding-top: 4px;
+    width: 100%;
+  }
+
+  .closeButton {
+    background-color: $red;
+    color: $white;
+    width: 30px;
+    height: 30px;
+    float: right;
+    margin: 0;
+  }
 
   .filterTitle {
     border-top: none;
@@ -483,6 +502,7 @@ h5.draftsHeader {
     margin-bottom: 0;
     padding: 6px 0;
     border-top: 1px solid white;
+    color: $lgrey;
   }
 
   input {
@@ -493,7 +513,8 @@ h5.draftsHeader {
   }
 
   .tempFilter, .waterFilter, .levelFilter, .flowFilter {
-    @include span-columns(12 of 12);
+    @include span-columns(10 of 12);
+    padding-left: 16px;
 
     p {
       @include span-columns(6 of 12);
@@ -507,7 +528,6 @@ h5.draftsHeader {
   }
 
   .riverNameFilter {
-    @include span-columns(12 of 12);
     padding-left: 0;
     position: relative;
 
