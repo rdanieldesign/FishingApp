@@ -77,6 +77,16 @@
 			$localStorage.$reset();
 			$rootScope.$storage.nsgs = data;
 		});
+		// Watch for photo uploads
+		// Get Image File and Geolocation Data on input field change
+		$('#imageFile').bind('change', function(e) {
+			var files = e.target.files || e.dataTransfer.files;
+			// Our file var now holds the selected file
+			$rootScope.file = files[0];
+			// HTML5 Geolocation
+			$rootScope.$broadcast("loader_show");
+			CreateFactory.getGeo();
+		});
 	}])
 
 	.directive("loader", function ($rootScope) {
@@ -98,8 +108,10 @@
 					var st = $(this).scrollTop();
 					if (st > lastScrollTop){
 						$('nav').addClass('reducedNav');
-					} else if(st < lastScrollTop - 10){
+						$('.main').addClass('reducedMain');
+					} else if(st < lastScrollTop - 5){
 						$('nav').removeClass('reducedNav');
+						$('.main').removeClass('reducedMain');
 					}
 					lastScrollTop = st;
 				};
@@ -170,7 +182,6 @@
 		MapFactory.startMap();
 
 		$scope.rivers = _.pairs($rootScope.nsgs);
-		console.log($scope.rivers);
 
 		// Uncommenting the below function will create all rivers in rivers.js
 		// RiverFactory.createRivers();
@@ -386,23 +397,28 @@
 
 		RiverFactory.getRiverData().then(function(data){
 			$scope.river = data;
-			var airTemperature;
 			// Conditions
 			RiverFactory.getRiverConditions(data[1]).then(function(results){
 				$scope.currentInfo = results;
-				$scope.waterFlow = results.discharge.values[0].value[0].value;
-				$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+				if(results.discharge){
+					$scope.waterFlow = results.discharge.values[0].value[0].value;
+				};
+				if(results.gageHeight){
+					$scope.waterLevel = results.gageHeight.values[0].value[0].value;
+				};
+				if(results.waterTemp){
+					$scope.waterTemp = (((Number(results.waterTemp.values[0].value[0].value))*9)/5)+32;
+				};
 				if(results.airTemp){
-					airTemperature = results.airTemp.values[0].value[0].value;
+					$scope.currentTemp = results.airTemp.values[0].value[0].value;
 				};
 			});
 			// Weather
-			RiverFactory.getRiverWeather(data).success(function(weather){
-				if(!airTemperature){
-					airTemperature = weather.main.temp;
-					$scope.currentTemp = airTemperature;
-				};
-			});
+			if(!$scope.currentTemp){
+				RiverFactory.getRiverWeather(data).success(function(weather){
+					$scope.currentTemp = weather.main.temp;
+				});
+			};
 		});
 
 		RiverFactory.getRiverCatches().success( function(data){
@@ -719,16 +735,6 @@
 		var geo;
 		var weather;
 
-		// Get Image File and Geolocation Data on input field change
-		$('#imageFile').bind('change', function(e) {
-			var files = e.target.files || e.dataTransfer.files;
-			// Our file var now holds the selected file
-			$rootScope.file = files[0];
-			// HTML5 Geolocation
-			$rootScope.$broadcast("loader_show");
-			getGeo();
-		});
-
 		// HTML5 Geolocation
 		var getGeo = function get_location() {
 			if (Modernizr.geolocation) {
@@ -739,7 +745,6 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
-					alert('Got geolocation!');
 					$rootScope.$broadcast("loader_hide");
 					postPic();
 				};
@@ -845,9 +850,7 @@
 					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
-					console.log(data);
 					var draftId = data.objectId;
-					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);
 				});
 			});
@@ -887,7 +890,8 @@
 			getPublished: getPublished,
 			getWeather: getWeather,
 			getConditions: getConditions,
-			haversine: haversine
+			haversine: haversine,
+			getGeo: getGeo
 		}
 
 	}]);
@@ -1049,7 +1053,7 @@
 
 		var getRiverWeather = function(river){
 			var coords = river[1][0].sourceInfo.geoLocation.geogLocation;
-			var params = '?lat='+ coords[0] +'&lon='+ coords[1];
+			var params = '?lat='+ coords.latitude +'&lon='+ coords.longitude;
 			return $http.get(weatherURL + params + weatherKey);
 		};
 
@@ -1079,7 +1083,6 @@
 		};
 
 		var getRiverConditions = function(singleRiver){
-			console.log(singleRiver);
 			var info = {};
 			return $q(function(resolve){
 			_.each(singleRiver, function(condition){
@@ -1109,8 +1112,6 @@
 					});
 					$rootScope.nsgs = grouped;
 					resolve($rootScope.nsgs);
-					console.log($rootScope.nsgs);
-					console.log(_.pairs($rootScope.nsgs));
 				});
 			})
 		};
