@@ -7,6 +7,7 @@
 
 // Variables
 $cRadius: 1px;
+$raleway: 'Raleway', sans-serif;
 
 // Mixins
 @mixin border-radius {
@@ -58,6 +59,10 @@ h3 {
 
 h5 {
   font-size: 1.2em;
+  font-family: $raleway;
+  font-weight: 200;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 ul, li {
@@ -136,6 +141,7 @@ button {
   border: none;
   height: 60px;
   margin-bottom: 8px;
+  letter-spacing: 1px;
 
   &:hover {
     background-color: $gold;
@@ -188,9 +194,14 @@ nav {
     div {
       height: 50px;
       width: 50px;
-      border: 1px solid white;
-      border-radius: 50%;
+      padding-top: 12px;
       margin: 0 auto;
+      text-align: center;
+      color: white;
+      font-family: $raleway;
+      font-size: 2.7em;
+      font-weight: 200;
+      letter-spacing: 4px;
     }
   }
 
@@ -206,6 +217,10 @@ nav {
     border: 1px solid $yellow;
     text-align: center;
     padding: 3px 0;
+    font-family: $raleway;
+    font-size: .9em;
+    font-weight: 200;
+    letter-spacing: 1px;
     text-transform: uppercase;
 
     &:hover {
@@ -405,7 +420,7 @@ h5.draftsHeader {
   width: 100%;
   text-align: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid $lgrey;
+  border-bottom: 1px solid $bggrey;
 }
 
 // Draft View
@@ -497,6 +512,7 @@ h5.draftsHeader {
 
 .riverTitle {
   @include span-columns(12);
+  text-align: center;
 }
 
 // Filters
@@ -533,8 +549,9 @@ h5.draftsHeader {
   .closeButton {
     background-color: $red;
     color: $white;
-    width: 30px;
-    height: 30px;
+    width: auto;
+    height: auto;
+    padding: 0px 10px 3px 10px;
     float: right;
     margin: 0;
   }
@@ -658,6 +675,12 @@ h5.draftsHeader {
 
 @media (min-width: 400px){
 
+  #logoutButton {
+    width: 300px;
+    margin: 0 auto;
+    float: none;
+  }
+
   .postThumb {
     @include span-columns(6);
     @include omega-reset(1n);
@@ -721,7 +744,7 @@ h5.draftsHeader {
   nav {
 
     #logo {
-      width: 90px;
+      width: 100px;
       margin: 0;
 
       div {
@@ -731,7 +754,7 @@ h5.draftsHeader {
     }
 
     .textlinks {
-      width: 320px;
+      width: 300px;
       margin: 7px 14px 0 0;
     }
 
@@ -759,7 +782,7 @@ h5.draftsHeader {
   .reducedNav {
 
     #logo {
-      width: 90px;
+      width: 100px;
       margin: 0;
     }
 
@@ -770,6 +793,7 @@ h5.draftsHeader {
     .fakeButton {
       width: 140px;
       float: right;
+      letter-spacing: 1px;
 
       #imageFile {
         height: 50px;
@@ -777,17 +801,20 @@ h5.draftsHeader {
     }
   }
 
-  /* // Filters
+  // Filters
   .riverfilters {
 
     button {
-      @include span-columns(6 of 12);
+      width: 48.2%;
+      margin: 4px 6px;
     }
 
     .openFilter {
-      @include span-columns(6 of 12);
+      display: inline-block;
+      width: 47.2%;
+      padding: 0 6px;
     }
-  } */
+  }
 }
 
 @media (min-width: 800px){
@@ -810,6 +837,7 @@ h5.draftsHeader {
 
   .riverTitle {
     @include span-columns(4);
+    text-align: left;
   }
 }
 
