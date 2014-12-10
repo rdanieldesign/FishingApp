@@ -159,6 +159,10 @@ button {
   margin-top: 200px;
 }
 
+.reducedMain {
+  margin-top: 80px;
+}
+
 // Navigation
 
 nav {
@@ -417,13 +421,23 @@ h5.draftsHeader {
 
 .fullMap {
   z-index: -1;
+
+  .leaflet-left {
+    left: 0;
+  }
+  .leaflet-top {
+    bottom: 20px;
+    top: auto;
+  }
+
 }
 
 // Map Search
 
 .riverSearch {
   @include span-columns(12);
-  padding-left: 40px;
+  padding-top: 24px;
+
 
   input {
     @include span-columns(12);
@@ -607,6 +621,14 @@ h5.draftsHeader {
     @include omega(2n);
   }
 
+  .main {
+    margin-top: 120px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
+  }
+
   nav {
 
     #logo {
@@ -643,6 +665,14 @@ h5.draftsHeader {
     @include span-columns(4);
     @include omega-reset(2n);
     @include omega(3n);
+  }
+
+  .main {
+    margin-top: 70px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
   }
 
   nav {
@@ -716,6 +746,11 @@ h5.draftsHeader {
   .riverMap {
     @include span-columns(8);
     @include omega();
+  }
+
+  .profileMap {
+    @include span-columns(12);
+    margin-top: 20px;
   }
 
   .riverTitle {
