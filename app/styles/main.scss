@@ -436,8 +436,6 @@ h5.draftsHeader {
 
 .riverSearch {
   @include span-columns(12);
-  padding-top: 24px;
-
 
   input {
     @include span-columns(12);
@@ -493,6 +491,15 @@ h5.draftsHeader {
     width: 100%;
   }
 
+  .riverList {
+    overflow: visible;
+
+    .closeButton {
+      float: none;
+      width: 100%;
+    }
+  }
+
   .closeButton {
     background-color: $red;
     color: $white;
@@ -529,6 +536,7 @@ h5.draftsHeader {
   .tempFilter, .waterFilter, .levelFilter, .flowFilter {
     @include span-columns(10 of 12);
     padding-left: 16px;
+    padding-top: 10px;
 
     p {
       @include span-columns(6 of 12);
