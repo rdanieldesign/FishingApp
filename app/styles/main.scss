@@ -136,6 +136,10 @@ button {
   border: none;
   height: 60px;
   margin-bottom: 8px;
+
+  &:hover {
+    background-color: $gold;
+  }
 }
 
 // Custom Styles
@@ -157,6 +161,10 @@ button {
 
 .main {
   margin-top: 200px;
+}
+
+.reducedMain {
+  margin-top: 80px;
 }
 
 // Navigation
@@ -199,6 +207,11 @@ nav {
     text-align: center;
     padding: 3px 0;
     text-transform: uppercase;
+
+    &:hover {
+      color: $gold;
+      border: 1px solid $gold;
+    }
   }
 
   .fakeButton {
@@ -214,6 +227,7 @@ nav {
       height: 60px;
       z-index: 2;
       position: absolute;
+      cursor: pointer;
     }
 
     span {
@@ -225,6 +239,10 @@ nav {
       left: 0;
       right: 0;
       z-index: 1;
+    }
+
+    &:hover {
+      background-color: $gold;
     }
   }
 }
@@ -273,6 +291,14 @@ nav {
 
 .loginText {
   text-align: center;
+
+  a {
+    font-size: .7em;
+  }
+}
+
+.loginEdit {
+  margin-top: 40px;
 }
 
 .imageInput {
@@ -375,6 +401,7 @@ nav {
 
 h5.draftsHeader {
   display: block;
+  clear: both;
   width: 100%;
   text-align: center;
   padding-bottom: 12px;
@@ -383,6 +410,8 @@ h5.draftsHeader {
 
 // Draft View
 .draftImage {
+  margin-top: 24px;
+  margin-bottom: 8px;
 }
 
 #imageForm {
@@ -417,14 +446,22 @@ h5.draftsHeader {
 
 .fullMap {
   z-index: -1;
+
+  .leaflet-left {
+    left: 0;
+  }
+  .leaflet-top {
+    bottom: 20px;
+    top: auto;
+  }
+
 }
 
 // Map Search
 
 .riverSearch {
   @include span-columns(12);
-  padding-top: 22px;
-  padding-left: 40px;
+  margin-top: 24px;
 
   input {
     @include span-columns(12);
@@ -462,16 +499,45 @@ h5.draftsHeader {
   @include span-columns(12);
 }
 
-.riverConditions {
-  @include span-columns(12);
-}
-
 // Filters
 
 .riverfilters {
   @include span-columns(12);
-  background-color: $yellow;
+  background-color: $bggrey;
+  color: $lgrey;
   padding: 20px;
+
+  .container {
+    padding: 0;
+  }
+
+  button {
+    @include span-columns(12 of 12);
+  }
+
+  .openFilter {
+    overflow: auto;
+    padding-top: 4px;
+    width: 100%;
+  }
+
+  .riverList {
+    overflow: visible;
+
+    .closeButton {
+      float: none;
+      width: 100%;
+    }
+  }
+
+  .closeButton {
+    background-color: $red;
+    color: $white;
+    width: 30px;
+    height: 30px;
+    float: right;
+    margin: 0;
+  }
 
   .filterTitle {
     border-top: none;
@@ -481,12 +547,13 @@ h5.draftsHeader {
   }
 
   h5 {
-    @include span-columns(11 of 12);
+    @include span-columns(12 of 12);
     @include omega();
     margin-top: 0;
     margin-bottom: 0;
     padding: 6px 0;
     border-top: 1px solid white;
+    color: $lgrey;
   }
 
   input {
@@ -497,7 +564,10 @@ h5.draftsHeader {
   }
 
   .tempFilter, .waterFilter, .levelFilter, .flowFilter {
-    @include span-columns(12 of 12);
+    @include span-columns(10 of 12);
+    padding-left: 16px;
+    padding-top: 10px;
+    color: $lgrey;
 
     p {
       @include span-columns(6 of 12);
@@ -506,18 +576,21 @@ h5.draftsHeader {
       span {
         display: block;
         width: 100%;
+        color: $mgrey;
+        font-weight: normal;
       }
     }
   }
 
   .riverNameFilter {
-    @include span-columns(12 of 12);
+    margin-top: 0;
     padding-left: 0;
     position: relative;
 
     #searchResults {
       position: absolute;
-      top: 80px;
+      top: 50px;
+      z-index: 99;
     }
 
     input {
@@ -591,6 +664,42 @@ h5.draftsHeader {
     @include omega(2n);
   }
 
+  .main {
+    margin-top: 120px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
+  }
+
+  nav {
+
+    #logo {
+      @include span-columns(3);
+
+      div {
+        margin: 24px auto;
+        float: left;
+      }
+    }
+
+    .textlinks {
+      @include span-columns(9);
+      @include omega();
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .textlinks a {
+      @include span-columns(3 of 9);
+    }
+
+    .fakeButton {
+      @include span-columns(9);
+      @include omega();
+    }
+  }
+
 }
 
 @media (min-width: 600px){
@@ -601,6 +710,84 @@ h5.draftsHeader {
     @include omega(3n);
   }
 
+  .main {
+    margin-top: 70px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
+  }
+
+  nav {
+
+    #logo {
+      width: 90px;
+      margin: 0;
+
+      div {
+        float: left;
+        margin: 0;
+      }
+    }
+
+    .textlinks {
+      width: 320px;
+      margin: 7px 14px 0 0;
+    }
+
+    .textlinks a {
+      width: 90px;
+      padding: 3px 0;
+      margin-right: 12px;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+      height: 50px;
+
+      #imageFile {
+        height: 50px;
+      }
+
+      span {
+        top: 12px;
+      }
+    }
+  }
+
+  .reducedNav {
+
+    #logo {
+      width: 90px;
+      margin: 0;
+    }
+
+    .textlinks {
+      display: block;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+
+      #imageFile {
+        height: 50px;
+      }
+    }
+  }
+
+  /* // Filters
+  .riverfilters {
+
+    button {
+      @include span-columns(6 of 12);
+    }
+
+    .openFilter {
+      @include span-columns(6 of 12);
+    }
+  } */
 }
 
 @media (min-width: 800px){
@@ -612,17 +799,17 @@ h5.draftsHeader {
   }
 
   .riverMap {
-    @include span-columns(4);
+    @include span-columns(8);
+    @include omega();
+  }
+
+  .profileMap {
+    @include span-columns(12);
+    margin-top: 20px;
   }
 
   .riverTitle {
     @include span-columns(4);
   }
-
-  .riverConditions {
-    @include span-columns(4);
-    @include omega();
-  }
-
 }
 
