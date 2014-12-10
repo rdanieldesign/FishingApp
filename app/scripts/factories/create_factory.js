@@ -7,16 +7,6 @@
 		var geo;
 		var weather;
 
-		// Get Image File and Geolocation Data on input field change
-		$('#imageFile').bind('change', function(e) {
-			var files = e.target.files || e.dataTransfer.files;
-			// Our file var now holds the selected file
-			$rootScope.file = files[0];
-			// HTML5 Geolocation
-			$rootScope.$broadcast("loader_show");
-			getGeo();
-		});
-
 		// HTML5 Geolocation
 		var getGeo = function get_location() {
 			if (Modernizr.geolocation) {
@@ -27,7 +17,6 @@
 						"latitude": latitude,
 						"longitude": longitude,
 					};
-					alert('Got geolocation!');
 					$rootScope.$broadcast("loader_hide");
 					postPic();
 				};
@@ -133,9 +122,7 @@
 					"status": 'draft'
 				}, P_HEADERS)
 				.success( function(data){
-					console.log(data);
 					var draftId = data.objectId;
-					alert('Ready to go to drafts');
 					$location.path('/draft/' + draftId);
 				});
 			});
@@ -175,7 +162,8 @@
 			getPublished: getPublished,
 			getWeather: getWeather,
 			getConditions: getConditions,
-			haversine: haversine
+			haversine: haversine,
+			getGeo: getGeo
 		}
 
 	}]);

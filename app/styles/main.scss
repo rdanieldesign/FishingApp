@@ -136,6 +136,10 @@ button {
   border: none;
   height: 60px;
   margin-bottom: 8px;
+
+  &:hover {
+    background-color: $gold;
+  }
 }
 
 // Custom Styles
@@ -203,6 +207,11 @@ nav {
     text-align: center;
     padding: 3px 0;
     text-transform: uppercase;
+
+    &:hover {
+      color: $gold;
+      border: 1px solid $gold;
+    }
   }
 
   .fakeButton {
@@ -218,6 +227,7 @@ nav {
       height: 60px;
       z-index: 2;
       position: absolute;
+      cursor: pointer;
     }
 
     span {
@@ -229,6 +239,10 @@ nav {
       left: 0;
       right: 0;
       z-index: 1;
+    }
+
+    &:hover {
+      background-color: $gold;
     }
   }
 }
@@ -277,6 +291,14 @@ nav {
 
 .loginText {
   text-align: center;
+
+  a {
+    font-size: .7em;
+  }
+}
+
+.loginEdit {
+  margin-top: 40px;
 }
 
 .imageInput {
@@ -379,6 +401,7 @@ nav {
 
 h5.draftsHeader {
   display: block;
+  clear: both;
   width: 100%;
   text-align: center;
   padding-bottom: 12px;
@@ -387,6 +410,8 @@ h5.draftsHeader {
 
 // Draft View
 .draftImage {
+  margin-top: 24px;
+  margin-bottom: 8px;
 }
 
 #imageForm {
@@ -436,6 +461,7 @@ h5.draftsHeader {
 
 .riverSearch {
   @include span-columns(12);
+  margin-top: 24px;
 
   input {
     @include span-columns(12);
@@ -485,6 +511,10 @@ h5.draftsHeader {
     padding: 0;
   }
 
+  button {
+    @include span-columns(12 of 12);
+  }
+
   .openFilter {
     overflow: auto;
     padding-top: 4px;
@@ -517,7 +547,7 @@ h5.draftsHeader {
   }
 
   h5 {
-    @include span-columns(11 of 12);
+    @include span-columns(12 of 12);
     @include omega();
     margin-top: 0;
     margin-bottom: 0;
@@ -537,6 +567,7 @@ h5.draftsHeader {
     @include span-columns(10 of 12);
     padding-left: 16px;
     padding-top: 10px;
+    color: $lgrey;
 
     p {
       @include span-columns(6 of 12);
@@ -545,17 +576,21 @@ h5.draftsHeader {
       span {
         display: block;
         width: 100%;
+        color: $mgrey;
+        font-weight: normal;
       }
     }
   }
 
   .riverNameFilter {
+    margin-top: 0;
     padding-left: 0;
     position: relative;
 
     #searchResults {
       position: absolute;
-      top: 80px;
+      top: 50px;
+      z-index: 99;
     }
 
     input {
@@ -741,6 +776,18 @@ h5.draftsHeader {
       }
     }
   }
+
+  /* // Filters
+  .riverfilters {
+
+    button {
+      @include span-columns(6 of 12);
+    }
+
+    .openFilter {
+      @include span-columns(6 of 12);
+    }
+  } */
 }
 
 @media (min-width: 800px){

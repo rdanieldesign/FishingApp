@@ -77,6 +77,16 @@
 			$localStorage.$reset();
 			$rootScope.$storage.nsgs = data;
 		});
+		// Watch for photo uploads
+		// Get Image File and Geolocation Data on input field change
+		$('#imageFile').bind('change', function(e) {
+			var files = e.target.files || e.dataTransfer.files;
+			// Our file var now holds the selected file
+			$rootScope.file = files[0];
+			// HTML5 Geolocation
+			$rootScope.$broadcast("loader_show");
+			CreateFactory.getGeo();
+		});
 	}])
 
 	.directive("loader", function ($rootScope) {
