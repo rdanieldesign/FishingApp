@@ -345,23 +345,24 @@ nav {
 .csscolumns {
 
   .grid {
-    -moz-column-count: 4;
-    -webkit-column-count: 4;
-    column-count: 4;
-    -moz-column-gap: 1.3em;
-    -webkit-column-gap: 1.3em;
-    column-gap: 1.3em;
+    -moz-column-count: 1;
+    -webkit-column-count: 1;
+    column-count: 1;
     margin: 40px 0;
     width: auto;
   }
 
   .postThumb {
+    display: inline-block;
+    float: none;
+    vertical-align: text-top !important;
     width: 100%;
     margin: 0;
+    margin-top: 0px;
     margin-bottom: 20px;
     background-color: white;
     break-inside: avoid-column;
-    -webkit-column-break-inside: avoid;
+    -webkit-column-break-inside:avoid; -moz-column-break-inside:avoid; -o-column-break-inside:avoid; -ms-column-break-inside:avoid; column-break-inside:avoid;
   }
 }
 
@@ -718,6 +719,18 @@ h5.draftsHeader {
     float: none;
   }
 
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 2;
+      -webkit-column-count: 2;
+      column-count: 2;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
+
   .postThumb {
     @include span-columns(6);
     @include omega-reset(1n);
@@ -763,6 +776,18 @@ h5.draftsHeader {
 }
 
 @media (min-width: 600px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 3;
+      -webkit-column-count: 3;
+      column-count: 3;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
 
   .postThumb {
     @include span-columns(4);
@@ -854,6 +879,18 @@ h5.draftsHeader {
 }
 
 @media (min-width: 800px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 4;
+      -webkit-column-count: 4;
+      column-count: 4;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
 
   .postThumb {
     @include span-columns(3);
