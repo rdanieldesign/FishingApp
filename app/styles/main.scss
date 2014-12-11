@@ -1,4 +1,11 @@
- // Bourbon & Neat
+// Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
+
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}
+
+// Bourbon & Neat
 @import '../../bower_components/bourbon/dist/bourbon';
 @import '../../bower_components/neat/app/assets/stylesheets/neat';
 
@@ -15,13 +22,6 @@ $raleway: 'Raleway', sans-serif;
   -moz-border-radius: $cRadius;
   -ms-border-radius: $cRadius;
   border-radius: $cRadius;
-}
-
-// Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
-
-@mixin omega-reset($nth) {
-  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
-  &:nth-child(#{$nth}+1) { clear: none }
 }
 
 $column: golden-ratio(1em, 3) !default; // Column width
@@ -81,6 +81,10 @@ a {
   &:hover {
     color: $yellow;
   }
+}
+
+.fakeDiv {
+  @include span-columns(12);
 }
 
 // Loader
@@ -338,6 +342,29 @@ nav {
 }
 
 // Posts
+.csscolumns {
+
+  .grid {
+    -moz-column-count: 1;
+    -webkit-column-count: 1;
+    column-count: 1;
+    margin: 40px 0;
+    width: auto;
+  }
+
+  .postThumb {
+    display: inline-block;
+    float: none;
+    vertical-align: text-top !important;
+    width: 100%;
+    margin: 0;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    background-color: white;
+    break-inside: avoid-column;
+    -webkit-column-break-inside:avoid; -moz-column-break-inside:avoid; -o-column-break-inside:avoid; -ms-column-break-inside:avoid; column-break-inside:avoid;
+  }
+}
 
 .grid {
   margin: 40px 0;
@@ -420,6 +447,7 @@ h5.draftsHeader {
   width: 100%;
   text-align: center;
   padding-bottom: 12px;
+  margin-bottom: 0;
   border-bottom: 1px solid $bggrey;
 }
 
@@ -521,20 +549,32 @@ h5.draftsHeader {
   @include span-columns(12);
   background-color: $bggrey;
   color: $lgrey;
-  padding: 20px;
+  padding: 20px 0;
 
   .container {
-    padding: 0;
+    overflow: visible;
   }
 
-  button {
+  .filterContainer {
     @include span-columns(12 of 12);
+
+    /* button {
+      width: 100%;
+      margin-right: 0;
+    } */
   }
 
-  .openFilter {
-    overflow: auto;
-    padding-top: 4px;
-    width: 100%;
+  .searchContainer {
+    @include span-columns(12 of 12);
+    margin-top: 10px;
+
+    button {
+      background-color: $green;
+    }
+
+    .closeButton {
+      background-color: $red;
+    }
   }
 
   .riverList {
@@ -557,19 +597,18 @@ h5.draftsHeader {
   }
 
   .filterTitle {
+    @include span-columns(12 of 12);
+    clear: both;
     border-top: none;
     text-align: center;
-    margin: 12px 0;
+    margin-bottom: 12px;
+    margin-top: 12px;
     padding: 0;
   }
 
   h5 {
     @include span-columns(12 of 12);
     @include omega();
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 6px 0;
-    border-top: 1px solid white;
     color: $lgrey;
   }
 
@@ -681,6 +720,18 @@ h5.draftsHeader {
     float: none;
   }
 
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 2;
+      -webkit-column-count: 2;
+      column-count: 2;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
+
   .postThumb {
     @include span-columns(6);
     @include omega-reset(1n);
@@ -726,6 +777,18 @@ h5.draftsHeader {
 }
 
 @media (min-width: 600px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 3;
+      -webkit-column-count: 3;
+      column-count: 3;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
 
   .postThumb {
     @include span-columns(4);
@@ -804,20 +867,31 @@ h5.draftsHeader {
   // Filters
   .riverfilters {
 
-    button {
-      width: 48.2%;
-      margin: 4px 6px;
+    .filterContainer {
+      @include span-columns(6 of 12);
+      @include omega(2n);
     }
 
-    .openFilter {
-      display: inline-block;
-      width: 47.2%;
-      padding: 0 6px;
+    .searchContainer {
+      @include span-columns(6 of 12);
+      @include shift(3);
     }
   }
 }
 
 @media (min-width: 800px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 4;
+      -webkit-column-count: 4;
+      column-count: 4;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
 
   .postThumb {
     @include span-columns(3);

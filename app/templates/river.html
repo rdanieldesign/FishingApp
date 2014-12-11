@@ -15,43 +15,52 @@
 	<div class="container">
 		<h5 class="filterTitle">Filter Recent Catches</h5>
 		<!-- 	air temp filter  -->
-		<button ng-click="tempSwitch = !tempSwitch" ng-show="!tempSwitch">Show Air Temp. Filter</button>
-		<div class="openFilter" ng-show="tempSwitch">
-			<button class="closeButton" ng-click="tempSwitch = !tempSwitch">x</button>
-			<div class="tempFilter" ng-show="tempSwitch">
-				<div id="tempSlider"></div>
-				<p>Min. Temp: <span id="tempSlider_low"></span></p>
-				<p>Max Temp: <span id="tempSlider_high"></span></p>
+		<div class="fakeDiv"></div>
+		<div class="filterContainer">
+			<button ng-click="tempSwitch = !tempSwitch" ng-show="!tempSwitch">Show Air Temp. Filter</button>
+			<div class="openFilter" ng-show="tempSwitch">
+				<button class="closeButton" ng-click="tempSwitch = !tempSwitch">x</button>
+				<div class="tempFilter" ng-show="tempSwitch">
+					<div id="tempSlider"></div>
+					<p>Min. Temp: <span id="tempSlider_low"></span></p>
+					<p>Max Temp: <span id="tempSlider_high"></span></p>
+				</div>
 			</div>
 		</div>
 		<!-- water level filter -->
-		<button ng-click="levelSwitch = !levelSwitch" ng-show="!levelSwitch">Show Water Level Filter</button>
-		<div class="openFilter" ng-show="levelSwitch">
-			<button class="closeButton" ng-click="levelSwitch = !levelSwitch">x</button>
-			<div class="levelFilter" ng-show="levelSwitch">
-				<div id="levelSlider"></div>
-				<p>Min. Water Level: <span id="levelSlider_low"></span></p>
-				<p>Max Water Level: <span id="levelSlider_high"></span></p>
+		<div class="filterContainer">
+			<button ng-click="levelSwitch = !levelSwitch" ng-show="!levelSwitch">Show Water Level Filter</button>
+			<div class="openFilter" ng-show="levelSwitch">
+				<button class="closeButton" ng-click="levelSwitch = !levelSwitch">x</button>
+				<div class="levelFilter" ng-show="levelSwitch">
+					<div id="levelSlider"></div>
+					<p>Min. Water Level: <span id="levelSlider_low"></span></p>
+					<p>Max Water Level: <span id="levelSlider_high"></span></p>
+				</div>
 			</div>
 		</div>
 		<!-- water temp filter -->
-		<button ng-click="waterSwitch = !waterSwitch" ng-show="!waterSwitch">Show Water Temp. Filter</button>
-		<div class="openFilter" ng-show="waterSwitch">
-			<button class="closeButton" ng-click="waterSwitch = !waterSwitch">x</button>
-			<div class="waterFilter" ng-show="waterSwitch">
-				<div id="waterSlider"></div>
-				<p>Min. Water Temperature: <span id="waterSlider_low"></span></p>
-				<p>Max Water Temperature: <span id="waterSlider_high"></span></p>
+		<div class="filterContainer">
+			<button ng-click="waterSwitch = !waterSwitch" ng-show="!waterSwitch">Show Water Temp. Filter</button>
+			<div class="openFilter" ng-show="waterSwitch">
+				<button class="closeButton" ng-click="waterSwitch = !waterSwitch">x</button>
+				<div class="waterFilter" ng-show="waterSwitch">
+					<div id="waterSlider"></div>
+					<p>Min. Water Temperature: <span id="waterSlider_low"></span></p>
+					<p>Max Water Temperature: <span id="waterSlider_high"></span></p>
+				</div>
 			</div>
 		</div>
 		<!-- water flow filter -->
-		<button ng-click="flowSwitch = !flowSwitch" ng-show="!flowSwitch">Show Water Flow Filter</button>
-		<div class="openFilter" ng-show="flowSwitch">
-			<button class="closeButton" ng-click="flowSwitch = !flowSwitch" ng-show="flowSwitch">x</button>
-			<div class="flowFilter" ng-show="flowSwitch">
-				<div id="flowSlider"></div>
-				<p>Min. Water Flow: <span id="flowSlider_low"></span></p>
-				<p>Max Water Flow: <span id="flowSlider_high"></span></p>
+		<div class="filterContainer">
+			<button ng-click="flowSwitch = !flowSwitch" ng-show="!flowSwitch">Show Water Flow Filter</button>
+			<div class="openFilter" ng-show="flowSwitch">
+				<button class="closeButton" ng-click="flowSwitch = !flowSwitch" ng-show="flowSwitch">x</button>
+				<div class="flowFilter" ng-show="flowSwitch">
+					<div id="flowSlider"></div>
+					<p>Min. Water Flow: <span id="flowSlider_low"></span></p>
+					<p>Max Water Flow: <span id="flowSlider_high"></span></p>
+				</div>
 			</div>
 		</div>
 	</div>
