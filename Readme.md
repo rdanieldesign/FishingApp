@@ -4,13 +4,16 @@ This application is a tool for fly fishermen to generate and gather all of the e
 
 #### Technologies Used
 
-* AngularJS
-* Parse
-* Bourbon/Neat
-* jQuery
-* Underscore
+* AngularJS[https://angularjs.org/]
+* Parse[https://parse.com/]
+* Underscore[http://underscorejs.org/]
+* Bourbon/Neat[http://neat.bourbon.io/]
+* jQuery[http://jquery.com/]
+* MomentJS[http://refreshless.com/nouislider/]
+* noUiSlider[http://refreshless.com/nouislider/]
 
 #### API's Used
 
-* Google Maps[https://developers.google.com/maps/]
+* Mapbox API[https://www.mapbox.com/developers/]
+* USGS API[http://waterservices.usgs.gov/rest/IV-Test-Tool.html]
 * OpenWeatherMap[http://openweathermap.org/]
