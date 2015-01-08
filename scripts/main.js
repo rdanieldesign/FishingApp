@@ -670,6 +670,7 @@
 			$rootScope.currentUser =  $cookieStore.get('currentUser');
 			if($rootScope.currentUser === undefined){
 				$location.path('/login');
+				alert('Please log in or register.');
 			}
 		};
 
