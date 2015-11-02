@@ -1,0 +1,109 @@
+// Posts
+.csscolumns {
+
+  .grid {
+    -moz-column-count: 1;
+    -webkit-column-count: 1;
+    column-count: 1;
+    margin: 40px 0;
+    width: auto;
+  }
+
+  .postThumb {
+    display: inline-block;
+    float: none;
+    vertical-align: text-top !important;
+    width: 100%;
+    margin: 0;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    background-color: white;
+    break-inside: avoid-column;
+    -webkit-column-break-inside:avoid; -moz-column-break-inside:avoid; -o-column-break-inside:avoid; -ms-column-break-inside:avoid; column-break-inside:avoid;
+  }
+}
+
+.grid {
+  margin: 40px 0;
+  @include span-columns(12);
+}
+
+.postThumb {
+  @include span-columns(12);
+  margin-bottom: 20px;
+  background-color: white;
+
+  .info {
+    width: 100%;
+    padding: 7px 7px 0 7px;
+    overflow: auto;
+  }
+
+  .userImage {
+    width: 46px;
+    height: 46px;
+    margin-right: 7px;
+    margin-bottom: 7px;
+    overflow: hidden;
+    float: left;
+  }
+
+  .catchDate {
+    text-align: center;
+    font-size: 0.8em;
+
+    p {
+      margin: 0;
+      padding: 0;
+      padding-bottom: 7px;
+    }
+  }
+
+  .userName {
+    float: left;
+    clear: right;
+
+    p, a {
+      margin: 0;
+      padding: 0
+    }
+
+    p {
+      font-size: 0.8em;
+    }
+  }
+
+  .seeMore {
+    clear: both;
+    width: 100%;
+    border-top: 1px solid $white;
+    text-align: center;
+
+    a {
+      display: inline-block;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    p {
+      text-align: left;
+      margin: 0;
+      padding: 10px 0;
+      border-bottom: 1px solid $white;
+    }
+  }
+
+  p {
+    margin-top: 0;
+  }
+}
+
+h5.draftsHeader {
+  display: block;
+  clear: both;
+  width: 100%;
+  text-align: center;
+  padding-bottom: 12px;
+  margin-bottom: 0;
+  border-bottom: 1px solid $bggrey;
+}

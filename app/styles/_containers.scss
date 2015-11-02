@@ -1,0 +1,22 @@
+#wrapper {
+  width: 100%;
+  font-size: 1.6em;
+  line-height: 1.6em;
+}
+
+.container {
+  @include outer-container;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  color: $lgrey;
+  overflow: auto;
+}
+
+.main {
+  margin-top: 200px;
+}
+
+.reducedMain {
+  margin-top: 80px;
+}

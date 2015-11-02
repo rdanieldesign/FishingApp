@@ -1,0 +1,26 @@
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $dgrey;
+
+  .leaflet-top .leaflet-control {
+    margin-top: 220px;
+    margin-left: 20px;
+  }
+}
+
+.fullMap {
+  z-index: -1;
+
+  .leaflet-left {
+    left: 0;
+  }
+  .leaflet-top {
+    bottom: 20px;
+    top: auto;
+  }
+
+}

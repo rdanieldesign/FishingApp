@@ -1,0 +1,32 @@
+input {
+  @include span-columns(12);
+  height: 50px;
+  padding-left: 20px;
+  border: none;
+  border-radius: none;
+  margin-bottom: 8px;
+}
+
+textarea {
+  @include span-columns(12);
+  max-width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: none;
+  margin-bottom: 8px;
+}
+
+button {
+  @include span-columns(12);
+  @include border-radius;
+  background-color: $yellow;
+  color: $white;
+  border: none;
+  height: 60px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+
+  &:hover {
+    background-color: $gold;
+  }
+}

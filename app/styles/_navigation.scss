@@ -1,0 +1,117 @@
+nav {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  background-color: $dgrey;
+  padding: 16px 0;
+  margin-bottom: 60px;
+  z-index: 9999;
+
+  .container {
+    background-color: $dgrey;
+  }
+
+  #logo {
+    @include span-columns(12);
+
+    div {
+      height: 50px;
+      width: 50px;
+      padding-top: 12px;
+      margin: 0 auto;
+      text-align: center;
+      color: white;
+      font-family: $raleway;
+      font-size: 2.7em;
+      font-weight: 200;
+      letter-spacing: 4px;
+    }
+  }
+
+  .textlinks {
+    @include span-columns(12);
+    margin: 16px 0 10px 0;
+  }
+
+  .textlinks a {
+    @include span-columns(4 of 12);
+    @include border-radius;
+    color: $yellow;
+    border: 1px solid $yellow;
+    text-align: center;
+    padding: 3px 0;
+    font-family: $raleway;
+    font-size: .9em;
+    font-weight: 200;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    &:hover {
+      color: $gold;
+      border: 1px solid $gold;
+    }
+  }
+
+  .fakeButton {
+    @include border-radius;
+    @include span-columns(12);
+    position: relative;
+    overflow: hidden;
+    background-color: $yellow;
+    height: 60px;
+
+    #imageFile {
+      opacity: 0;
+      height: 60px;
+      z-index: 2;
+      position: absolute;
+      cursor: pointer;
+    }
+
+    span {
+      color: white;
+      position: absolute;
+      text-align: center;
+      width: 100%;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      letter-spacing: 0;
+    }
+
+    &:hover {
+      background-color: $gold;
+    }
+  }
+}
+
+.reducedNav {
+
+  #logo {
+    @include span-columns(6);
+
+    div {
+      float: left;
+      margin: 0;
+      height: 50px;
+    }
+  }
+
+  .textlinks {
+    display: none;
+  }
+
+  .fakeButton {
+    @include span-columns(6);
+    height: 50px;
+
+    #imageFile {
+      height: 50px;
+    }
+
+    span {
+      top: 12px;
+    }
+  }
+}

@@ -1,0 +1,174 @@
+// River Profile
+
+.riverMap {
+  @include span-columns(12);
+  height: 300px;
+  position: relative;
+}
+
+.riverTitle {
+  @include span-columns(12);
+  text-align: center;
+}
+
+// Filters
+
+.riverfilters {
+  @include span-columns(12);
+  background-color: $bggrey;
+  color: $lgrey;
+  padding: 20px 0;
+
+  .container {
+    overflow: visible;
+  }
+
+  .filterContainer {
+    @include span-columns(12 of 12);
+  }
+
+  .searchContainer {
+    @include span-columns(12 of 12);
+    margin-top: 10px;
+
+    button {
+      background-color: $green;
+    }
+
+    .closeButton {
+      background-color: $red;
+    }
+  }
+
+  .riverList {
+    overflow: visible;
+
+    .closeButton {
+      float: none;
+      width: 100%;
+    }
+  }
+
+  .closeButton {
+    background-color: $red;
+    color: $white;
+    width: auto;
+    height: auto;
+    padding: 0px 10px 3px 10px;
+    float: right;
+    margin: 0;
+  }
+
+  .filterTitle {
+    @include span-columns(12 of 12);
+    clear: both;
+    border-top: none;
+    text-align: center;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    padding: 0;
+  }
+
+  h5 {
+    @include span-columns(12 of 12);
+    @include omega();
+    color: $lgrey;
+  }
+
+  input {
+    @include span-columns(1 of 12);
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .tempFilter, .waterFilter, .levelFilter, .flowFilter {
+    @include span-columns(10 of 12);
+    padding-left: 16px;
+    padding-top: 10px;
+    color: $lgrey;
+
+    p {
+      @include span-columns(6 of 12);
+      text-align: center;
+
+      span {
+        display: block;
+        width: 100%;
+        color: $mgrey;
+        font-weight: normal;
+      }
+    }
+  }
+
+  .riverNameFilter {
+    margin-top: 0;
+    padding-left: 0;
+    position: relative;
+
+    #searchResults {
+      position: absolute;
+      top: 50px;
+      z-index: 99;
+    }
+
+    input {
+      width: inherit;
+      height: 50px;
+      color: $lgrey;
+    }
+  }
+
+  .tempSlider, .waterSlider, .levelSlider, .flowSlider {
+    @include span-columns(12 of 12);
+  }
+
+  .container {
+    color: white;
+  }
+}
+
+// NoUI slider styles
+
+.noUi-connect {
+  background: $green;
+  box-shadow: none;
+}
+
+.noUi-target {
+  @include border-radius;
+  border: 1px solid $white;
+  box-shadow: none;
+}
+
+.noUi-background {
+  background: white;
+  box-shadow: none;
+}
+
+.noUi-horizontal {
+  height: 12px;
+}
+
+.noUi-horizontal .noUi-handle {
+  width: 30px;
+  height: 18px;
+  left: -17px;
+  top: -4px;
+}
+
+.noUi-handle:after, .noUi-handle:before {
+  display: block;
+  position: absolute;
+  height: 8px;
+  width: 1px;
+  background: #E8E7E6;
+  left: 14px;
+  top: 4px;
+}
+.noUi-handle:after {
+  left: 17px;
+}
+.noUi-handle-upper {
+  content: "<";
+}

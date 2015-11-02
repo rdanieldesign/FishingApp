@@ -1,0 +1,204 @@
+// Media Queries
+
+@media (min-width: 400px){
+
+  #logoutButton {
+    width: 300px;
+    margin: 0 auto;
+    float: none;
+  }
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 2;
+      -webkit-column-count: 2;
+      column-count: 2;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
+
+  .postThumb {
+    @include span-columns(6);
+    @include omega-reset(1n);
+    @include omega(2n);
+  }
+
+  .main {
+    margin-top: 120px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
+  }
+
+  nav {
+
+    #logo {
+      @include span-columns(3);
+
+      div {
+        margin: 24px auto;
+        float: left;
+      }
+    }
+
+    .textlinks {
+      @include span-columns(9);
+      @include omega();
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .textlinks a {
+      @include span-columns(3 of 9);
+    }
+
+    .fakeButton {
+      @include span-columns(9);
+      @include omega();
+    }
+  }
+
+}
+
+@media (min-width: 600px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 3;
+      -webkit-column-count: 3;
+      column-count: 3;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
+
+  .postThumb {
+    @include span-columns(4);
+    @include omega-reset(2n);
+    @include omega(3n);
+  }
+
+  .main {
+    margin-top: 70px;
+  }
+
+  .reducedMain {
+    margin-top: 70px;
+  }
+
+  nav {
+
+    #logo {
+      width: 100px;
+      margin: 0;
+
+      div {
+        float: left;
+        margin: 0;
+      }
+    }
+
+    .textlinks {
+      width: 300px;
+      margin: 7px 14px 0 0;
+    }
+
+    .textlinks a {
+      width: 90px;
+      padding: 3px 0;
+      margin-right: 12px;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+      height: 50px;
+
+      #imageFile {
+        height: 50px;
+      }
+
+      span {
+        top: 12px;
+      }
+    }
+  }
+
+  .reducedNav {
+
+    #logo {
+      width: 100px;
+      margin: 0;
+    }
+
+    .textlinks {
+      display: block;
+    }
+
+    .fakeButton {
+      width: 140px;
+      float: right;
+      letter-spacing: 1px;
+
+      #imageFile {
+        height: 50px;
+      }
+    }
+  }
+
+  // Filters
+  .riverfilters {
+
+    .filterContainer {
+      @include span-columns(6 of 12);
+      @include omega(2n);
+    }
+
+    .searchContainer {
+      @include span-columns(6 of 12);
+      @include shift(3);
+    }
+  }
+}
+
+@media (min-width: 800px){
+
+  .csscolumns {
+
+    .grid {
+      -moz-column-count: 4;
+      -webkit-column-count: 4;
+      column-count: 4;
+      -moz-column-gap: 1.3em;
+      -webkit-column-gap: 1.3em;
+      column-gap: 1.3em;
+    }
+  }
+
+  .postThumb {
+    @include span-columns(3);
+    @include omega-reset(3n);
+    @include omega(4n);
+  }
+
+  .riverMap {
+    @include span-columns(8);
+    @include omega();
+  }
+
+  .profileMap {
+    @include span-columns(12);
+    margin-top: 20px;
+  }
+
+  .riverTitle {
+    @include span-columns(4);
+    text-align: left;
+  }
+}

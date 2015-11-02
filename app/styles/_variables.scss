@@ -1,0 +1,23 @@
+// Variables
+$cRadius: 1px;
+$raleway: 'Raleway', sans-serif;
+
+// Mixins
+@mixin border-radius {
+  -webkit-border-radius: $cRadius;
+  -moz-border-radius: $cRadius;
+  -ms-border-radius: $cRadius;
+  border-radius: $cRadius;
+}
+
+// Neat Grid Resets - Thanks Josh Fry! http://joshfry.me/blog/2013/05/13/omega-reset-for-bourbon-neat/
+
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}
+
+$column: golden-ratio(1em, 3) !default; // Column width
+$gutter: golden-ratio(1em, 1) !default; // Gutter between each two columns
+$fg-column: $column;
+$fg-gutter: $gutter;

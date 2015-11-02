@@ -1,0 +1,45 @@
+// Login
+
+.loginImage {
+  width: 160px;
+  height: 160px;
+  display: block;
+  margin: 40px auto 20px auto;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid $yellow;
+}
+
+.loginText {
+  text-align: center;
+  margin-top: 40px;
+
+  a {
+    font-size: .7em;
+  }
+}
+
+.loginEdit {
+  margin-top: 40px;
+}
+
+.imageInput {
+  padding: 0;
+  margin: 0
+}
+
+#loginForm {
+
+  #loginButton {
+    background-color: $green;
+  }
+
+  #registerButton {
+    margin-bottom: 50px;
+  }
+
+  #logoutButton {
+    background-color: $red;
+    margin-bottom: 50px;
+  }
+}
