@@ -4,9 +4,10 @@
 	</div>
 	<p class="loginText" ng-show="signedIn">Logged in as {{user.name}} <a href="#/me/{{user.objectId}}">edit profile</a></p></p>
 	<p class="loginText" ng-hide="signedIn">Sign in or Register</p>
+	<p class="loginText" ng-hide="signedIn">Don't have an account? Enter a user name and password above and click "register" to get started.</p>
 	<p class="loginText" ng-show="newUser">Add your name and a profile image!</p>
 	<form id="loginForm">
-		<input type="text" placeholder="Email" ng-model="user.username" ng-hide="signedIn">
+		<input type="text" placeholder="User Name" ng-model="user.username" ng-hide="signedIn">
 		<input type="password" placeholder="Password" ng-model="user.password" ng-hide="signedIn">
 		<input type="text" placeholder="Full Name" ng-show="newUser" ng-model="user.name">
 		<p ng-show="newUser">Choose an avatar image:</p>
