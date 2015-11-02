@@ -25,42 +25,47 @@
 			return $http.post(userURL, {
 				'username': user.username,
 				'password': user.password
-				// 'avatar': data.url,
-				// 'name': user.name
 			}, P_HEADERS);
 		};
 
-		var updateUser = function(user){
-			var currentFileURL = filesURL + currentFile.name;
-			// Set catches' user
-			var currentUser = $cookieStore.get('currentUser');
-			return $http.post(currentFileURL, currentFile, {
-				headers: {
-					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
-					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
-					'Content-Type': currentFile.type
-				}
-			},
-			{
-				processData: false,
-				contentType: false,
-			}).
-			success(function(data){
-				// Set Catch Image
-				var picURL = data.url;
-				$http.put(userURL + currentUser.objectId, {
-					"avatar": picURL,
-					"name": user.name
-				}, {
+		var updateUser = function(userName){
+			var currentFileURL = currentFile ? filesURL + currentFile.name : null;
+			var user = userName || '';
+			if(currentFileURL){
+				return $http.post(currentFileURL, currentFile, {
 					headers: {
-					'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
-					'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
-					'X-Parse-Session-Token': currentUser.sessionToken,
-					'Content-Type': 'application/json'
+						'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+						'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+						'Content-Type': currentFile.type
 					}
-				}).success(function(){
-					$location.path('/');
+				},
+				{
+					processData: false,
+					contentType: false,
+				}).success( function(data){
+					_postData(data, user);
 				});
+			} else {
+				return _postData({}, user)
+			}
+		};
+
+		var _postData = function(data, userName){
+			var currentUser = $cookieStore.get('currentUser');
+			var picURL = data ? data.url : '';
+			var postObj = {
+				avatar: picURL,
+				name: userName
+			};
+			$http.put(userURL + currentUser.objectId, postObj, {
+				headers: {
+				'X-Parse-Application-Id': 'gKGgerF26AzUsTMhhm9xFnbrvZWoajQHbFeu9B3y',
+				'X-Parse-REST-API-Key': 'SVkllrVLa4WQeWhEHAe8CAWbp60zAfuOF0Nu3fHn',
+				'X-Parse-Session-Token': currentUser.sessionToken,
+				'Content-Type': 'application/json'
+				}
+			}).success(function(){
+				$location.path('/');
 			});
 		};
 
