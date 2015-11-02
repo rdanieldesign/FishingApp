@@ -22,10 +22,20 @@
 		};
 
 		var registerUser =  function(user){
-			return $http.post(userURL, {
-				'username': user.username,
-				'password': user.password
-			}, P_HEADERS);
+			if(user && user.username && user.password){
+				return $http.post(userURL, {
+					'username': user.username,
+					'password': user.password
+				}, P_HEADERS)
+				.success( function(){
+					newUser(user);
+				})
+				.error( function(){
+					alert('Please provide a username and password.');
+				});
+			} else {
+				alert('Please provide a username and password');
+			}
 		};
 
 		var updateUser = function(userName){
@@ -80,15 +90,19 @@
 		};
 
 		var loginUser = function(user){
-			var params = 'username='+user.username+'&password='+user.password;
-			$http.get(loginURL + params, P_HEADERS)
-			.success( function(user){
-				$cookieStore.remove('currentUser');
-				$cookieStore.put('currentUser', user);
-				$location.path('/');
-			}).error( function(){
-				alert('Incorrect credentials.');
-			});
+			if(user && user.username && user.password){
+				var params = 'username='+user.username+'&password='+user.password;
+				$http.get(loginURL + params, P_HEADERS)
+				.success( function(user){
+					$cookieStore.remove('currentUser');
+					$cookieStore.put('currentUser', user);
+					$location.path('/');
+				}).error( function(){
+					alert('Incorrect credentials.');
+				});
+			} else {
+				alert('Please provide a username and password');
+			}
 		};
 
 		logout = function () {
@@ -102,7 +116,6 @@
 			$rootScope.currentUser =  $cookieStore.get('currentUser');
 			if($rootScope.currentUser === undefined){
 				$location.path('/login');
-				alert('Please log in or register.');
 			}
 		};
 

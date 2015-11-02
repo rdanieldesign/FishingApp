@@ -19,11 +19,7 @@
 		$scope.newUser = null;
 
 		$scope.registerUser = function(user){
-			UserFactory.registerUser(user).success( function(){
-				UserFactory.newUser(user);
-			}).error( function(){
-				alert('Please provide a username and password.');
-			});
+			UserFactory.registerUser(user);
 		};
 
 		$scope.loginUser = function(user){
